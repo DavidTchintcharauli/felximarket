@@ -6,6 +6,7 @@ import i18n from "@/i18";
 import { useCallback } from "react";
 import { LanguageButton } from "./components/common/LanguageButton";
 import { languages } from "./config/languages";
+import Link from "next/link";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -22,18 +23,18 @@ export default function Home() {
       {user ? (
         <>
           <h1 className="text-3xl font-bold">Welcome, {user.name}!</h1>
-          <a href="/api/auth/logout">
+          <Link  href="/api/auth/logout">
             <button className="px-4 py-2 bg-red-500 text-white rounded">Logout</button>
-          </a>
+          </Link>
         </>
       ) : (
         <>
-          <a href="/api/auth/login?screen_hint=signup">
-            <button className="px-4 py-2 bg-green-500 text-white rounded">Sign Up</button>
-          </a>
-          <a href="/api/auth/login">
-            <button className="px-4 py-2 bg-blue-500 text-white rounded">Log In</button>
-          </a>
+          <Link href="/api/auth/login?screen_hint=signup">
+            <button className="px-4 py-2 bg-green-500 text-white rounded">{t("logout")}</button>
+          </Link>
+          <Link  href="/api/auth/login">
+            <button className="px-4 py-2 bg-blue-500 text-white rounded">{t("login")}</button>
+          </Link>
         </>
       )}
       <h1 className="text-3xl font-bold">{t("greeting")}</h1>
