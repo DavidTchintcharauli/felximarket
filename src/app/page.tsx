@@ -7,6 +7,7 @@ import { useCallback } from "react";
 import { LanguageButton } from "./components/common/LanguageButton";
 import { languages } from "./config/languages";
 import Link from "next/link";
+import ThemeToggleButton from "./components/ThemeToggleButton";
 
 export default function Home() {
   const { t } = useTranslation();
@@ -48,6 +49,7 @@ export default function Home() {
           />
         ))}
       </div>
+      <ThemeToggleButton />
     </div>
   );
 }
