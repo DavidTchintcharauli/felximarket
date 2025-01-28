@@ -4,8 +4,8 @@ import { useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
 
-export default function LoginPage() {
-  const { signIn } = useAuth();
+export default function RegisterPage() {
+  const { signUp } = useAuth();
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -17,9 +17,9 @@ export default function LoginPage() {
     setError(null);
 
     try {
-      await signIn(email, password);
-      alert("Logged in successfully!");
-      router.push("/");
+      await signUp(email, password);
+      alert("Registration successful! Please log in.");
+      router.push("/auth/login");
     } catch (err: any) {
       setError(err.message);
     }
@@ -27,7 +27,7 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-6">
-      <h1 className="text-2xl font-bold mb-4">Login</h1>
+      <h1 className="text-2xl font-bold mb-4">Register</h1>
       <form onSubmit={handleSubmit} className="flex flex-col gap-4 w-full max-w-sm">
         <input
           type="email"
@@ -45,8 +45,8 @@ export default function LoginPage() {
           className="p-2 border rounded"
           required
         />
-        <button type="submit" className="px-4 py-2 bg-green-500 text-white rounded">
-          Log In
+        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
+          Register
         </button>
       </form>
       {error && <p className="text-red-500 mt-4">{error}</p>}
