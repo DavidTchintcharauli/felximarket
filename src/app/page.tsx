@@ -21,8 +21,12 @@ export default function Home() {
     try {
       await signOut();
       alert("Signed out successfully!");
-    } catch (error: any) {
-      alert(error.message);
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      } else {
+        alert("An unknown error occurred.");
+      }
     }
   };
 
