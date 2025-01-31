@@ -17,14 +17,21 @@ export async function GET(req: NextRequest) {
     if (error) {
       return NextResponse.json(
         { error: error.message },
-        { status: 401 } 
+        { status: 401 }
       );
     }
 
     return NextResponse.json({ user: data.user }, { status: 200 });
-  } catch (error: any) {
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: 500 }
+      );
+    }
+
     return NextResponse.json(
-      { error: error.message || "Internal Server Error" },
+      { error: "Unknown error occurred" },
       { status: 500 }
     );
   }
