@@ -2,20 +2,24 @@
 
 import { useTheme } from "@/app/context/ThemeContext";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
+
+type ThemeType = "light" | "dark" | "system";
 
 export default function ThemeToggleButton() {
   const { theme, setTheme } = useTheme(); 
+  const { t } = useTranslation();
   const [showOptions, setShowOptions] = useState(false);
 
-  const options: { value: "light" | "dark" | "system"; label: string }[] = [
-    { value: "light", label: "Light" },
-    { value: "dark", label: "Dark" },
-    { value: "system", label: "System" },
+  const options: { value: ThemeType; label: string }[] = [
+    { value: "light", label: t("theme.light") },
+    { value: "dark", label: t("theme.dark") },
+    { value: "system", label: t("theme.system") },
   ];
 
   const filteredOptions = options.filter((option) => option.value !== theme);
 
-  const handleThemeChange = (newTheme: "light" | "dark" | "system") => {
+  const handleThemeChange = (newTheme: ThemeType) => {
     setTheme(newTheme);
     setShowOptions(false);
   };
@@ -26,7 +30,7 @@ export default function ThemeToggleButton() {
         onClick={() => setShowOptions(!showOptions)}
         className="px-4 py-2 bg-gray-200 dark:bg-gray-800 text-black dark:text-white rounded"
       >
-        {theme === "system" ? "System" : theme === "dark" ? "Dark" : "Light"}
+        {theme === "system" ? t("theme.system") : theme === "dark" ? t("theme.dark") : t("theme.light")}
       </button>
 
       {showOptions && (

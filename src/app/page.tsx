@@ -7,6 +7,7 @@ import { LanguageButton } from "./components/common/LanguageButton";
 import { languages } from "./config/languages";
 import ThemeToggleButton from "./components/ThemeToggleButton";
 import { useAuth } from "./context/AuthContext";
+import Header from "./components/common/Header";
 import Link from "next/link";
 
 export default function Home() {
@@ -30,47 +31,29 @@ export default function Home() {
     }
   };
 
-  if (loading) return <div>Loading...</div>;
+  if (loading) return <div className="flex justify-center items-center min-h-screen text-xl font-semibold">Loading...</div>;
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen gap-6">
+      <Header />
+      <h1 className="text-4xl font-extrabold sm:text-6xl">{t("landing_title")}</h1>
+      <p className="mt-4 text-lg sm:text-xl text-gray-600 dark:text-gray-400">
+        {t("landing_subtitle")}
+      </p>
       <h1 className="text-3xl font-bold">{t("greeting")}</h1>
-      <div className="flex gap-4">
-        {languages.map(({ code, label }) => (
-          <LanguageButton
-            key={code}
-            language={code}
-            label={label}
-            onClick={handleLanguageChange}
-          />
-        ))}
-      </div>
-      <ThemeToggleButton />
-      <div className="mt-6">
-        {user ? (
-          <>
-            <h2>Welcome, {user.email}!</h2>
-            <button
-              onClick={handleSignOut}
-              className="px-4 py-2 bg-red-500 text-white rounded"
-            >
-              Sign Out
-            </button>
-          </>
-        ) : (
-          <>
-            <Link href="/auth/login">
-              <button className="px-4 py-2 bg-green-500 text-white rounded">
-                Sign In
-              </button>
-            </Link>
-            <Link href="/auth/register">
-              <button className="px-4 py-2 bg-blue-500 text-white rounded mt-4">
-                Register
-              </button>
-            </Link>
-          </>
-        )}
+      <div className="mt-12 grid grid-cols-1 sm:grid-cols-3 gap-6 w-full max-w-4xl">
+        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <h3 className="text-xl font-semibold">{t("feature_1_title")}</h3>
+          <p className="text-gray-600 dark:text-gray-400">{t("feature_1_desc")}</p>
+        </div>
+        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <h3 className="text-xl font-semibold">{t("feature_2_title")}</h3>
+          <p className="text-gray-600 dark:text-gray-400">{t("feature_2_desc")}</p>
+        </div>
+        <div className="p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+          <h3 className="text-xl font-semibold">{t("feature_3_title")}</h3>
+          <p className="text-gray-600 dark:text-gray-400">{t("feature_3_desc")}</p>
+        </div>
       </div>
     </div>
   );
