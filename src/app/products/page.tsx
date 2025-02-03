@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 type Product = {
   id: string;
@@ -18,6 +19,7 @@ export default function ProductsPage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchProducts() {
@@ -54,13 +56,13 @@ export default function ProductsPage() {
         body: JSON.stringify({ productId, userId: user.id }),
       });
 
-      const text = await res.text(); // ✅ API-ის რეალური პასუხის ნახვა
+      const text = await res.text();
 
-      console.log("API Response:", text); // ✅ Debugging
+      console.log("API Response:", text);
 
       let data;
       try {
-        data = JSON.parse(text); // ვცდილობთ JSON-ად გარდაქმნას
+        data = JSON.parse(text);
       } catch (jsonError) {
         console.error("Invalid JSON response:", text);
         throw new Error("Unexpected response from server");
@@ -80,15 +82,15 @@ export default function ProductsPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen text-xl">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen text-xl">{t("loading...")}</div>;
   }
 
   return (
-    <div className="max-w-4xl mx-auto mt-10 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Products</h1>
+    <div className="max-w-4xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">{t("products")}</h1>
 
       {products.length === 0 ? (
-        <p className="text-center text-gray-600 dark:text-gray-300">No products available.</p>
+        <p className="text-center text-gray-600 dark:text-gray-300">{t("noProductsAvailable.")}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {products.map((product) => (
@@ -97,20 +99,18 @@ export default function ProductsPage() {
               <p className="text-gray-700 dark:text-gray-300">{product.description || "No description"}</p>
               <p className="mt-2 font-bold text-lg text-blue-600 dark:text-blue-400">${product.price.toFixed(2)}</p>
 
-              {/* Debugging */}
-              <p className="text-xs text-gray-500 dark:text-gray-400">Owner: {product.user_id}</p>
-              <p className="text-xs text-gray-500 dark:text-gray-400">Current User: {user?.id}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t("owner")} {product.user_id}</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">{t("currentUser")} {user?.id}</p>
 
-              {/* **მხოლოდ მფლობელს შეუძლია წაშლა** */}
               {user && user.id === product.user_id && (
                 <button
                   onClick={() => handleDelete(product.id)}
-                  disabled={deleting === product.id} // ✅ დაბლოკვის ლოგიკა
+                  disabled={deleting === product.id}
                   className={`mt-4 px-4 py-2 text-white rounded-lg transition w-full ${
                     deleting === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
                   }`}
                 >
-                  {deleting === product.id ? "Deleting..." : "Delete"}
+                  {deleting === product.id ? t("Deleting...") : t("delete")}
                 </button>
               )}
             </div>

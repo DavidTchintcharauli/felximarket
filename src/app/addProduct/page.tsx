@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 
 export default function AddProductPage() {
   const { user } = useAuth();
@@ -11,6 +12,7 @@ export default function AddProductPage() {
   const [price, setPrice] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -39,11 +41,11 @@ export default function AddProductPage() {
   };
 
   return (
-    <div className="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4">Add Product</h1>
+    <div className="max-w-md mx-auto mt-32 p-6 bg-white rounded-lg shadow-md">
+      <h1 className="text-2xl font-bold mb-4">{t("addProduct")}</h1>
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block font-semibold">Name</label>
+          <label className="block font-semibold">{t("name")}</label>
           <input
             type="text"
             className="w-full p-2 border rounded"
@@ -53,7 +55,7 @@ export default function AddProductPage() {
           />
         </div>
         <div className="mb-4">
-          <label className="block font-semibold">Description</label>
+          <label className="block font-semibold">{t("description")}</label>
           <textarea
             className="w-full p-2 border rounded"
             value={description}
@@ -61,7 +63,7 @@ export default function AddProductPage() {
           ></textarea>
         </div>
         <div className="mb-4">
-          <label className="block font-semibold">Price ($)</label>
+          <label className="block font-semibold">{t("price")} ($)</label>
           <input
             type="number"
             className="w-full p-2 border rounded"
@@ -75,7 +77,7 @@ export default function AddProductPage() {
           className="w-full bg-blue-500 text-white py-2 rounded-lg"
           disabled={loading}
         >
-          {loading ? "Adding..." : "Add Product"}
+          {loading ? t("Adding...") : t("addProduct")}
         </button>
       </form>
     </div>

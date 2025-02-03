@@ -35,29 +35,24 @@ export default function Header() {
   return (
     <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow-md z-50">
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
-        {/* ლოგო & მთავარი გვერდი */}
         <div className="flex items-center gap-4">
           <Link href="/" className="text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-500 transition">
             🏠 {t("site_name")}
           </Link>
         </div>
-
-        {/* მობილურისთვის ღილაკი */}
         <button className="md:hidden text-gray-700 dark:text-white" onClick={() => setMenuOpen(!menuOpen)}>
           {menuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
 
-        {/* ნავიგაცია (Desktop) */}
         <nav className="hidden md:flex space-x-6">
           <Link href="/products" className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition">
             {t("products")}
           </Link>
           <Link href="/addProduct" className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition">
-            {t("add_product")}
+            {t("addProduct")}
           </Link>
         </nav>
 
-        {/* ენის გადამრთველი, თემის გადამრთველი და ავტორიზაცია */}
         <div className="hidden md:flex items-center gap-4">
           {languages.map(({ code, label }) => (
             <LanguageButton key={code} language={code} label={label} onClick={handleLanguageChange} />
@@ -96,7 +91,6 @@ export default function Header() {
         </div>
       </div>
 
-      {/* მობილური მენიუ */}
       {menuOpen && (
         <nav className="md:hidden bg-white dark:bg-gray-800 shadow-md py-4 px-6">
           <ul className="space-y-4 text-center">

@@ -18,5 +18,17 @@
     "feature_3_title": "Multi-language Support",
     "feature_3_desc": "Switch between Georgian and English effortlessly.",
     "site_name":"FlexiMarket",
-    "add": "Add"
+    "add": "Add",
+    "addProduct": "Add Product",
+    "name": "Name",
+    "description": "Description",
+    "price": "Price",
+    "adding...": "Adding...",
+    "loading...": "Loading...",
+    "products": "Product",
+    "noProductsAvailable" : "No products available.",
+    "owner": "Owner:",
+    "currentUser": "Current User:",
+    "delete": "Delete",
+    "deleting...": "Deleting..."
 }
