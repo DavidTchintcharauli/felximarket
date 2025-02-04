@@ -4,37 +4,120 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
+import { createClient } from "@supabase/supabase-js";
+
+// Supabase Client-ის ინიციალიზაცია
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+);
 
 export default function AddProductPage() {
   const { user } = useAuth();
-  const [name, setName] = useState("");
-  const [description, setDescription] = useState("");
-  const [price, setPrice] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [name, setName] = useState<string>("");
+  const [description, setDescription] = useState<string>("");
+  const [price, setPrice] = useState<string>("");
+  const [images, setImages] = useState<File[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
   const { t } = useTranslation();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  // ფოტოების ცვლილება
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      const files = Array.from(e.target.files);
+      console.log("Selected files:", files); // დაადასტურეთ, რომ ფაილები სწორად არის არჩეული
+      setImages(files);
+    }
+  };
+
+  const uploadImages = async (): Promise<string[] | null> => {
+    const uploadedUrls: string[] = [];
+  
+    for (const file of images) {
+      console.log("Uploading file:", file.name);
+  
+      if (!file.type.startsWith("image/")) {
+        console.error("Only images are allowed.");
+        continue;
+      }
+  
+      if (file.size > 5 * 1024 * 1024) {
+        console.error("File size exceeds 5MB limit.");
+        continue;
+      }
+  
+      const filePath = `products/${Date.now()}-${file.name}`;
+      console.log("File path:", filePath);
+  
+      const { data, error } = await supabase.storage
+        .from("productimage") // ✅ გამოიყენე შენი bucket-ის ნამდვილი სახელი!
+        .upload(filePath, file);
+  
+      if (error) {
+        console.error("Image upload failed:", error.message, error);
+        return null;
+      }
+  
+      console.log("File uploaded successfully:", data);
+  
+      // ✅ `getPublicUrl()`-ის სწორი გამოყენება
+      const { data: publicUrlData } = supabase.storage
+        .from("product")
+        .getPublicUrl(filePath);
+  
+      if (publicUrlData?.publicUrl) {
+        console.log("Public URL:", publicUrlData.publicUrl);
+        uploadedUrls.push(publicUrlData.publicUrl);
+      }
+    }
+  
+    if (uploadedUrls.length === 0) {
+      console.error("No images were uploaded.");
+      return null;
+    }
+  
+    return uploadedUrls;
+  };  
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) {
       alert("You must be logged in to add a product");
       return;
     }
-    
+
     setLoading(true);
+
+    const imageUrls = await uploadImages();
+    console.log("Uploaded image URLs:", imageUrls); // დაადასტურეთ, რომ imageUrls სწორად არის მიღებული
+
+    if (!imageUrls) {
+      setLoading(false);
+      alert("Image upload failed.");
+      return;
+    }
 
     const res = await fetch("/api/products", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name, description, price: parseFloat(price), user_id: user.id, }),
+      body: JSON.stringify({
+        name,
+        description,
+        images: imageUrls,
+        price: parseFloat(price),
+        user_id: user.id,
+      }),
     });
 
     if (res.ok) {
       alert("Product added successfully!");
       router.push("/products");
     } else {
-      alert("Failed to add product.");
+      const errorData = await res.json(); // მიიღეთ შეცდომის დეტალები
+      console.error("API Error:", errorData); // დაბეჭდეთ შეცდომა
+      alert("Failed to add product: " + errorData.error);
     }
 
     setLoading(false);
@@ -72,12 +155,22 @@ export default function AddProductPage() {
             required
           />
         </div>
+        <div className="mb-4">
+          <label className="block font-semibold">{t("uploadImages")}</label>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            className="w-full p-2 border rounded"
+            onChange={handleImageChange}
+          />
+        </div>
         <button
           type="submit"
           className="w-full bg-blue-500 text-white py-2 rounded-lg"
           disabled={loading}
         >
-          {loading ? t("Adding...") : t("addProduct")}
+          {loading ? t("adding") : t("addProduct")}
         </button>
       </form>
     </div>
