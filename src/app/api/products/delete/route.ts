@@ -18,10 +18,10 @@ export async function DELETE(req: Request) {
 
     console.log("🗑 Deleting product:", productId, "by user:", userId);
 
-    // ✅ 2. შეამოწმე, მართლა ეკუთვნის თუ არა ეს პროდუქტი ამ მომხმარებელს
+    // ✅ 2. პროდუქტის გამოთხოვა (სურათების ბილიკების ჩათვლით)
     const { data: product, error: fetchError } = await supabaseAdmin
       .from("products")
-      .select("user_id")
+      .select("user_id, images")
       .eq("id", productId)
       .single();
 
@@ -34,7 +34,38 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // ✅ 3. პროდუქტის წაშლა
+    // ✅ 3. ფოტოების წაშლა Supabase Storage-იდან
+    if (product.images && Array.isArray(product.images) && product.images.length > 0) {
+      const filePaths = product.images.map((url: string) => {
+        // 📌 თუ URL-ში არის `sign`, ვყოფთ `sign/productimage/products/` ნაწილზე
+        if (url.includes("/sign/productimage/products/")) {
+          const parts = url.split("/sign/productimage/products/");
+          return parts.length > 1 ? `products/${parts[1].split("?")[0]}` : "";
+        }
+        // 📌 თუ URL უკვე public-ია, ვყოფთ `public/productimage/products/` ნაწილზე
+        else if (url.includes("/public/productimage/products/")) {
+          const parts = url.split("/public/productimage/products/");
+          return parts.length > 1 ? `products/${parts[1]}` : "";
+        }
+        return "";
+      }).filter(Boolean); // 📌 ვშლით ცარიელ ბილიკებს      
+
+      console.log("🗑 Deleting images:", filePaths);
+
+      if (filePaths.length > 0) {
+        const { error: deleteImageError } = await supabaseAdmin
+          .storage
+          .from("productimage")
+          .remove(filePaths);
+
+        if (deleteImageError) {
+          console.error("❌ Error deleting images:", deleteImageError);
+          return NextResponse.json({ error: "Failed to delete images" }, { status: 500 });
+        }
+      }
+    }
+
+    // ✅ 4. პროდუქტის წაშლა მონაცემთა ბაზიდან
     const { error: deleteError } = await supabaseAdmin
       .from("products")
       .delete()
@@ -45,8 +76,8 @@ export async function DELETE(req: Request) {
       return NextResponse.json({ error: deleteError.message }, { status: 500 });
     }
 
-    console.log("✅ Product deleted successfully:", productId);
-    return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
+    console.log("✅ Product and images deleted successfully:", productId);
+    return NextResponse.json({ message: "Product and images deleted successfully" }, { status: 200 });
 
   } catch (error) {
     console.error("❌ Internal Server Error:", error);

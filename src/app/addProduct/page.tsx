@@ -51,7 +51,7 @@ export default function AddProductPage() {
       console.log("File path:", filePath);
   
       const { data, error } = await supabase.storage
-        .from("productimage") // ✅ გამოიყენე შენი bucket-ის ნამდვილი სახელი!
+        .from("productimage")
         .upload(filePath, file);
   
       if (error) {
@@ -61,15 +61,19 @@ export default function AddProductPage() {
   
       console.log("File uploaded successfully:", data);
   
-      // ✅ `getPublicUrl()`-ის სწორი გამოყენება
-      const { data: publicUrlData } = supabase.storage
-        .from("product")
-        .getPublicUrl(filePath);
+      // 🔹 Signed URL-ის გენერირება
+      const { data: signedUrlData, error: signedError } = await supabase
+        .storage
+        .from("productimage")
+        .createSignedUrl(filePath, 60 * 60); // ✅ Signed URL - 1 საათით მოქმედი
   
-      if (publicUrlData?.publicUrl) {
-        console.log("Public URL:", publicUrlData.publicUrl);
-        uploadedUrls.push(publicUrlData.publicUrl);
+      if (signedError) {
+        console.error("❌ Error generating signed URL:", signedError);
+        return null;
       }
+  
+      console.log("✅ Signed URL:", signedUrlData?.signedUrl);
+      uploadedUrls.push(signedUrlData?.signedUrl || "");
     }
   
     if (uploadedUrls.length === 0) {
@@ -78,7 +82,8 @@ export default function AddProductPage() {
     }
   
     return uploadedUrls;
-  };  
+  };
+  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

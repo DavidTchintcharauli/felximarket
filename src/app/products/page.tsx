@@ -30,39 +30,45 @@ export default function ProductsPage() {
         .from("products")
         .select("*")
         .order("created_at", { ascending: false });
-
+  
       if (error) throw new Error(error.message);
-
       if (!data) {
         console.warn("No products found.");
         setProducts([]);
         return;
       }
-
-      // ✅ ფოტოების უსაფრთხო წამოღება
-      const productsWithImages = data.map((product) => {
-        const imageUrls = Array.isArray(product.images)
-          ? product.images.map((path: string) => {
-              const { data: urlData } = supabase
-                .storage
-                .from("productimage") // ✅ ეს უნდა იყოს `productimage` არა `productimage/products`
-                .getPublicUrl(`products/${path}`); // ✅ სწორი ბილიკი
   
-              if (error) {
-                console.error("❌ Error generating URL for path:", path, error);
-                return "";
-              }
+      // ✅ Signed URL-ების მიღება
+      const productsWithImages = await Promise.all(
+        data.map(async (product) => {
+          const imageUrls = Array.isArray(product.images)
+            ? await Promise.all(
+                product.images.map(async (fileName: string) => {
+                  if (fileName.startsWith("https://")) {
+                    return fileName; // ✅ უკვე Signed URL-ია
+                  }
   
-              console.log("✅ Generated URL for path:", path, "is:", urlData?.publicUrl);
-              return urlData?.publicUrl || "";
-            })
-          : [];
+                  // 🔹 Signed URL-ების მიღება
+                  const { data: signedUrlData, error } = await supabase
+                    .storage
+                    .from("productimage") // ✅ Supabase ბაკეტი
+                    .createSignedUrl(`products/${fileName}`, 60 * 60); // ✅ 1 საათით მოქმედი Signed URL
   
-        return { ...product, images: imageUrls };
-      });
+                  if (error) {
+                    console.error("❌ Error generating signed URL for:", fileName, error);
+                    return "";
+                  }
   
-      
-
+                  console.log("✅ Generated Signed URL:", signedUrlData?.signedUrl);
+                  return signedUrlData?.signedUrl || "";
+                })
+              )
+            : [];
+  
+          return { ...product, images: imageUrls };
+        })
+      );
+  
       setProducts(productsWithImages);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -70,6 +76,7 @@ export default function ProductsPage() {
       setLoading(false);
     }
   }, []);
+  
 
   // ✅ პირველად კომპონენტის ჩატვირთვისას
   useEffect(() => {
