@@ -170,7 +170,7 @@ export default function AddProductPage() {
           className="w-full bg-blue-500 text-white py-2 rounded-lg"
           disabled={loading}
         >
-          {loading ? t("adding") : t("addProduct")}
+          {loading ? t("adding...") : t("addProduct")}
         </button>
       </form>
     </div>

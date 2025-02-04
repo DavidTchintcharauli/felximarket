@@ -40,15 +40,28 @@ export default function ProductsPage() {
       }
 
       // ✅ ფოტოების უსაფრთხო წამოღება
-      const productsWithImages = data.map((product) => ({
-        ...product,
-        images: Array.isArray(product.images)
+      const productsWithImages = data.map((product) => {
+        const imageUrls = Array.isArray(product.images)
           ? product.images.map((path: string) => {
-              const { data: urlData } = supabase.storage.from("productimage").getPublicUrl(path);
+              const { data: urlData } = supabase
+                .storage
+                .from("productimage") // ✅ ეს უნდა იყოს `productimage` არა `productimage/products`
+                .getPublicUrl(`products/${path}`); // ✅ სწორი ბილიკი
+  
+              if (error) {
+                console.error("❌ Error generating URL for path:", path, error);
+                return "";
+              }
+  
+              console.log("✅ Generated URL for path:", path, "is:", urlData?.publicUrl);
               return urlData?.publicUrl || "";
             })
-          : [],
-      }));
+          : [];
+  
+        return { ...product, images: imageUrls };
+      });
+  
+      
 
       setProducts(productsWithImages);
     } catch (error) {
@@ -127,9 +140,8 @@ export default function ProductsPage() {
                 <button
                   onClick={() => handleDelete(product.id)}
                   disabled={deleting === product.id}
-                  className={`mt-4 px-4 py-2 text-white rounded-lg transition w-full ${
-                    deleting === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
-                  }`}
+                  className={`mt-4 px-4 py-2 text-white rounded-lg transition w-full ${deleting === product.id ? "bg-gray-400 cursor-not-allowed" : "bg-red-500 hover:bg-red-600"
+                    }`}
                 >
                   {deleting === product.id ? t("Deleting...") : t("delete")}
                 </button>
