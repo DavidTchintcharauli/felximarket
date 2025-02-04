@@ -1,42 +1,41 @@
-import { supabase } from "../../../utils/supabaseClient";
+import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
+
+// Supabase Admin Client (Service Role) - საჭიროა RLS-ის გვერდის ავლისთვის
+const supabaseAdmin = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SERVICE_ROLE!
+);
 
 export async function DELETE(req: Request) {
   try {
-    const body = await req.json().catch(() => null);
-    if (!body || !body.productId || !body.userId) {
-      console.log("❌ Missing required parameters");
-      return NextResponse.json({ error: "Missing product ID or user ID" }, { status: 400 });
+    const { productId, userId } = await req.json();
+
+    // ✅ 1. Input Validation - UUID უნდა იყოს სწორი
+    if (!/^[0-9a-fA-F-]{36}$/.test(productId) || !/^[0-9a-fA-F-]{36}$/.test(userId)) {
+      return NextResponse.json({ error: "Invalid UUID format" }, { status: 400 });
     }
 
-    const { productId, userId } = body;
-    console.log("🔍 Attempting to delete product:", productId);
+    console.log("🗑 Deleting product:", productId, "by user:", userId);
 
-    // ვამოწმებთ, პროდუქტი არსებობს თუ არა
-    const { data: product, error: fetchError } = await supabase
+    // ✅ 2. შეამოწმე, მართლა ეკუთვნის თუ არა ეს პროდუქტი ამ მომხმარებელს
+    const { data: product, error: fetchError } = await supabaseAdmin
       .from("products")
       .select("user_id")
       .eq("id", productId)
       .single();
 
     if (fetchError) {
-      console.error("❌ Error fetching product:", fetchError);
+      console.error("❌ Product fetch error:", fetchError);
       return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    if (!product) {
-      console.warn("⚠️ Product does not exist in the database");
-      return NextResponse.json({ error: "Product does not exist" }, { status: 404 });
-    }
-
-    if (product.user_id !== userId) {
-      console.warn("⚠️ Unauthorized delete attempt by user:", userId);
+    if (!product || product.user_id !== userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
     }
 
-    // პროდუქტის წაშლა
-    console.log("🗑 Deleting product:", productId);
-    const { error: deleteError } = await supabase
+    // ✅ 3. პროდუქტის წაშლა
+    const { error: deleteError } = await supabaseAdmin
       .from("products")
       .delete()
       .eq("id", productId);

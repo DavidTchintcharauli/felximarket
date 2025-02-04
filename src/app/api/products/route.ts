@@ -1,33 +1,55 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-// ✅ გამოიყენე მხოლოდ სერვერზე! (RLS-ს გვერდს აუვლის)
+// Supabase Admin Client (Service Role) - საჭიროა RLS-ის გვერდის ავლისთვის
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE! // ✅ Service Role გამოიყენე, რათა RLS არ მოქმედებდეს
+  process.env.SUPABASE_SERVICE_ROLE!
 );
 
-export async function POST(req: Request) {
+export async function DELETE(req: Request) {
   try {
-    const { name, description, price, images, user_id } = await req.json();
+    const { productId, userId } = await req.json();
 
-    if (!name || !price || !user_id || !images || images.length === 0) {
-      return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
+    // ✅ 1. Input Validation - UUID უნდა იყოს სწორი
+    if (!/^[0-9a-fA-F-]{36}$/.test(productId) || !/^[0-9a-fA-F-]{36}$/.test(userId)) {
+      return NextResponse.json({ error: "Invalid UUID format" }, { status: 400 });
     }
 
-    // ✅ შეცვალე `supabase` → `supabaseAdmin`
-    const { data, error } = await supabaseAdmin
+    console.log("🗑 Deleting product:", productId, "by user:", userId);
+
+    // ✅ 2. შეამოწმე, მართლა ეკუთვნის თუ არა ეს პროდუქტი ამ მომხმარებელს
+    const { data: product, error: fetchError } = await supabaseAdmin
       .from("products")
-      .insert([{ name, description, price, images, user_id }])
-      .select();
+      .select("user_id")
+      .eq("id", productId)
+      .single();
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (fetchError) {
+      console.error("❌ Product fetch error:", fetchError);
+      return NextResponse.json({ error: "Product not found" }, { status: 404 });
     }
 
-    return NextResponse.json({ data }, { status: 201 });
+    if (!product || product.user_id !== userId) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+    }
+
+    // ✅ 3. პროდუქტის წაშლა
+    const { error: deleteError } = await supabaseAdmin
+      .from("products")
+      .delete()
+      .eq("id", productId);
+
+    if (deleteError) {
+      console.error("❌ Failed to delete product:", deleteError);
+      return NextResponse.json({ error: deleteError.message }, { status: 500 });
+    }
+
+    console.log("✅ Product deleted successfully:", productId);
+    return NextResponse.json({ message: "Product deleted successfully" }, { status: 200 });
+
   } catch (error) {
-    console.error("API Error:", error);
+    console.error("❌ Internal Server Error:", error);
     return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }
