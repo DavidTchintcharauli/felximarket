@@ -1,44 +1,51 @@
-'use client'
+"use client";
 
-import { useState } from 'react'
-import { supabase } from '../utils/supabaseClient'
-import stripe from '../utils/stripe'
+import { useState } from "react";
+import { supabase } from "../utils/supabaseClient";
 
 export default function Checkout() {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
-    setLoading(true)
+    setLoading(true);
     try {
-      const { data: user } = await supabase.auth.getUser()
+      const { data: { session } } = await supabase.auth.getSession();
 
-      const session = await stripe.checkout.sessions.create({
-        payment_method_types: ['card'],
-        line_items: [
-          {
-            price: 'price_123456789', 
-            quantity: 1,
-          },
-        ],
-        mode: 'payment',
-        success_url: `${window.location.origin}/success`,
-        cancel_url: `${window.location.origin}/cancel`,
-        customer_email: user.email,
-      })
+      if (!session) {
+        alert("You must be logged in to proceed with checkout.");
+        return;
+      }
 
-      window.location.href = session.url
+      // ✅ Checkout API-ს გამოძახება
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ supabaseAccessToken: session.access_token }),
+      });
+
+      if (!res.ok) {
+        throw new Error("Failed to create checkout session");
+      }
+
+      const { url } = await res.json();
+      window.location.href = url;
+      
     } catch (error) {
-      console.error(error)
+      console.error("❌ Checkout Error:", error);
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   return (
-    <div>
-      <button onClick={handleCheckout} disabled={loading}>
-        {loading ? 'Processing...' : 'Checkout'}
+    <div className="flex justify-center">
+      <button
+        onClick={handleCheckout}
+        disabled={loading}
+        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition disabled:bg-gray-400"
+      >
+        {loading ? "Processing..." : "Checkout"}
       </button>
     </div>
-  )
+  );
 }
