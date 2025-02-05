@@ -1,13 +1,12 @@
 "use client";
 
 import { useTranslation } from "react-i18next";
-import i18n from "@/i18";
 import { useAuth } from "./context/AuthContext";
 import Header from "./components/common/Header";
 
 export default function Home() {
   const { t } = useTranslation();
-  const { loading, signOut } = useAuth();
+  const { loading } = useAuth();
 
   if (loading) return <div className="flex justify-center items-center min-h-screen text-xl font-semibold">Loading...</div>;
 
