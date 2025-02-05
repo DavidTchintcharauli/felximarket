@@ -24,7 +24,7 @@ export default async function handler(req, res) {
   // Handle the event
   switch (event.type) {
     case 'checkout.session.completed':
-      const session = event.data.object
+      // const session = event.data.object
       // Update your database or perform other actions
       break
     // Handle other event types
