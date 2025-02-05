@@ -1,3 +1,5 @@
+'use client'
+
 import { useState } from 'react'
 import { supabase } from '../utils/supabaseClient'
 import stripe from '../utils/stripe'
