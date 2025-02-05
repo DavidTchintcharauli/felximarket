@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import { useRouter } from "next/navigation";
 
@@ -17,7 +18,15 @@ export default function CartPage() {
         <div>
           {cart.map((item) => (
             <div key={item.id} className="flex items-center justify-between border-b py-4">
-              <img src={item.images[0]} alt={item.name} className="w-20 h-20 object-cover rounded-lg" />
+              <div className="relative w-20 h-20"> 
+                <Image 
+                  src={item.images[0]} 
+                  alt={item.name} 
+                  layout="fill" // ✅ ავტომატური ზომების ოპტიმიზაცია
+                  objectFit="cover" // ✅ სურათის პროპორციის შენარჩუნება
+                  className="rounded-lg"
+                />
+              </div>
               <div className="flex-1 ml-4">
                 <p className="font-semibold">{item.name}</p>
                 <p className="text-gray-600 dark:text-gray-300">${item.price.toFixed(2)}</p>
