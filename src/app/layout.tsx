@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
 import { CartProvider } from "./context/CartContext"
+import { Toaster } from "react-hot-toast";
 import Header from "./components/common/Header";
 import "./globals.css";
 
@@ -36,6 +37,7 @@ export default function RootLayout({
             >
               <Header />
               <main className="container mx-auto mt-6 px-4">{children}</main>
+              <Toaster position="top-right" reverseOrder={false} /> 
             </body>
           </CartProvider>
         </ThemeProvider>

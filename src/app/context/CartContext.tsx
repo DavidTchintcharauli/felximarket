@@ -1,10 +1,12 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from "react";
+import { createContext, useContext, useState } from "react";
+import { toast } from "react-hot-toast";
 
 type CartItem = {
   id: string;
   name: string;
+  description: string;
   price: number;
   images: string[];
   quantity: number;
@@ -19,14 +21,12 @@ type CartContextType = {
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
-export function CartProvider({ children }: { children: ReactNode }) {
+export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>([]);
 
-  // ✅ პროდუქტის დამატება კალათაში
   const addToCart = (item: CartItem) => {
     setCart((prevCart) => {
       const existingItem = prevCart.find((cartItem) => cartItem.id === item.id);
-
       if (existingItem) {
         return prevCart.map((cartItem) =>
           cartItem.id === item.id ? { ...cartItem, quantity: cartItem.quantity + 1 } : cartItem
@@ -35,16 +35,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
         return [...prevCart, { ...item, quantity: 1 }];
       }
     });
+    toast.success(`✅ ${item.name} added to cart!`);
   };
 
-  // ✅ პროდუქტის წაშლა კალათიდან
   const removeFromCart = (id: string) => {
     setCart((prevCart) => prevCart.filter((item) => item.id !== id));
+    toast.success("🗑 Product removed from cart.");
   };
 
-  // ✅ კალათის გასუფთავება
   const clearCart = () => {
     setCart([]);
+    toast.success("🛒 Cart cleared.");
   };
 
   return (
@@ -54,7 +55,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
   );
 }
 
-// ✅ Hook კალათის გამოსაყენებლად
 export function useCart() {
   const context = useContext(CartContext);
   if (!context) {

@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import { createClient } from "@supabase/supabase-js";
+import { toast } from "react-hot-toast";
+import { Upload, Loader2 } from "lucide-react";
 
 // Supabase Client-ის ინიციალიზაცია
 const supabase = createClient(
@@ -26,7 +28,6 @@ export default function AddProductPage() {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
-      console.log("Selected files:", files); // დაადასტურეთ, რომ ფაილები სწორად არის არჩეული
       setImages(files);
     }
   };
@@ -35,72 +36,61 @@ export default function AddProductPage() {
     const uploadedUrls: string[] = [];
   
     for (const file of images) {
-      console.log("Uploading file:", file.name);
-  
       if (!file.type.startsWith("image/")) {
-        console.error("Only images are allowed.");
+        toast.error("Only images are allowed.");
         continue;
       }
   
       if (file.size > 5 * 1024 * 1024) {
-        console.error("File size exceeds 5MB limit.");
+        toast.error("File size exceeds 5MB limit.");
         continue;
       }
   
       const filePath = `products/${Date.now()}-${file.name}`;
-      console.log("File path:", filePath);
-  
       const { data, error } = await supabase.storage
         .from("productimage")
         .upload(filePath, file);
   
       if (error) {
-        console.error("Image upload failed:", error.message, error);
+        toast.error("Image upload failed!");
         return null;
       }
   
-      console.log("File uploaded successfully:", data);
-  
-      // 🔹 Signed URL-ის გენერირება
       const { data: signedUrlData, error: signedError } = await supabase
         .storage
         .from("productimage")
-        .createSignedUrl(filePath, 60 * 60); // ✅ Signed URL - 1 საათით მოქმედი
+        .createSignedUrl(filePath, 60 * 60); // 1 საათით მოქმედი
   
       if (signedError) {
-        console.error("❌ Error generating signed URL:", signedError);
+        toast.error("Error generating signed URL.");
         return null;
       }
   
-      console.log("✅ Signed URL:", signedUrlData?.signedUrl);
       uploadedUrls.push(signedUrlData?.signedUrl || "");
     }
   
     if (uploadedUrls.length === 0) {
-      console.error("No images were uploaded.");
+      toast.error("No images were uploaded.");
       return null;
     }
   
     return uploadedUrls;
   };
-  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!user) {
-      alert("You must be logged in to add a product");
+      toast.error("You must be logged in to add a product.");
       return;
     }
 
     setLoading(true);
+    toast.loading("Uploading images...");
 
     const imageUrls = await uploadImages();
-    console.log("Uploaded image URLs:", imageUrls); // დაადასტურეთ, რომ imageUrls სწორად არის მიღებული
-
     if (!imageUrls) {
       setLoading(false);
-      alert("Image upload failed.");
       return;
     }
 
@@ -117,65 +107,93 @@ export default function AddProductPage() {
     });
 
     if (res.ok) {
-      alert("Product added successfully!");
+      toast.success("Product added successfully!");
       router.push("/products");
     } else {
-      const errorData = await res.json(); // მიიღეთ შეცდომის დეტალები
-      console.error("API Error:", errorData); // დაბეჭდეთ შეცდომა
-      alert("Failed to add product: " + errorData.error);
+      const errorData = await res.json();
+      toast.error("Failed to add product: " + errorData.error);
     }
 
     setLoading(false);
   };
 
   return (
-    <div className="max-w-md mx-auto mt-32 p-6 bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4">{t("addProduct")}</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="mb-4">
-          <label className="block font-semibold">{t("name")}</label>
+    <div className="max-w-lg mx-auto mt-32 p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">
+        {t("addProduct")}
+      </h1>
+      <form onSubmit={handleSubmit} className="space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("name")}
+          </label>
           <input
             type="text"
-            className="w-full p-2 border rounded"
+            className="mt-1 block w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block font-semibold">{t("description")}</label>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("description")}
+          </label>
           <textarea
-            className="w-full p-2 border rounded"
+            className="mt-1 block w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
         </div>
-        <div className="mb-4">
-          <label className="block font-semibold">{t("price")} ($)</label>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("price")} ($)
+          </label>
           <input
             type="number"
-            className="w-full p-2 border rounded"
+            className="mt-1 block w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required
           />
         </div>
-        <div className="mb-4">
-          <label className="block font-semibold">{t("uploadImages")}</label>
-          <input
-            type="file"
-            multiple
-            accept="image/*"
-            className="w-full p-2 border rounded"
-            onChange={handleImageChange}
-          />
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
+            {t("uploadImages")}
+          </label>
+          <label className="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 dark:border-gray-600">
+            <input
+              type="file"
+              multiple
+              accept="image/*"
+              className="hidden"
+              onChange={handleImageChange}
+            />
+            <div className="flex flex-col items-center justify-center space-y-2">
+              <Upload className="w-8 h-8 text-gray-500 dark:text-gray-300" />
+              <span className="text-sm text-gray-600 dark:text-gray-400">
+                Click or drag files here to upload
+              </span>
+            </div>
+          </label>
         </div>
+
         <button
           type="submit"
-          className="w-full bg-blue-500 text-white py-2 rounded-lg"
+          className="w-full flex items-center justify-center bg-blue-500 text-white py-3 rounded-lg font-semibold hover:bg-blue-600 transition disabled:opacity-50"
           disabled={loading}
         >
-          {loading ? t("adding...") : t("addProduct")}
+          {loading ? (
+            <>
+              <Loader2 className="animate-spin h-5 w-5 mr-2" />
+              {t("adding...")}
+            </>
+          ) : (
+            t("addProduct")
+          )}
         </button>
       </form>
     </div>

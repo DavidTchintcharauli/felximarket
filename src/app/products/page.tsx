@@ -14,6 +14,7 @@ type Product = {
   user_id: string;
   created_at: string;
   images: string[];
+  quantity: number;
 };
 
 export default function ProductsPage() {
@@ -64,7 +65,7 @@ export default function ProductsPage() {
               )
             : [];
 
-          return { ...product, images: imageUrls };
+          return { ...product, images: imageUrls, quantity: 1 };
         })
       );
 
