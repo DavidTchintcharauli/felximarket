@@ -6,13 +6,25 @@ import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-hot-toast";
 import { Loader2, Upload } from "lucide-react";
+import Image from "next/image";
+
+// ✅ `Product` ტიპის განსაზღვრა
+type Product = {
+  id: string;
+  name: string;
+  description: string;
+  price: number;
+  user_id: string;
+  created_at: string;
+  images: string[];
+};
 
 export default function EditProductPage() {
   const { user } = useAuth();
   const router = useRouter();
   const params = useParams();
   const productId = params?.id as string;
-  const [product, setProduct] = useState<any>(null);
+  const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [newImages, setNewImages] = useState<File[]>([]);
@@ -61,7 +73,7 @@ export default function EditProductPage() {
 
     for (const file of newImages) {
       const filePath = `products/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
+      const { error } = await supabase.storage
         .from("productimage")
         .upload(filePath, file);
 
@@ -88,10 +100,11 @@ export default function EditProductPage() {
 
   const handleUpdateProduct = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!product) return;
+
     setUpdating(true);
 
     let updatedImages = product.images;
-
     if (newImages.length > 0) {
       const imageUrls = await uploadImages();
       if (imageUrls) {
@@ -99,7 +112,7 @@ export default function EditProductPage() {
       }
     }
 
-    const updatedPrice = parseFloat(product.price);
+    const updatedPrice = parseFloat(product.price.toString());
     if (isNaN(updatedPrice) || updatedPrice <= 0) {
       toast.error("Invalid price value.");
       setUpdating(false);
@@ -112,7 +125,7 @@ export default function EditProductPage() {
         name: product.name.trim(),
         description: product.description.trim(),
         price: updatedPrice,
-        images: updatedImages, 
+        images: updatedImages,
       })
       .eq("id", product.id);
 
@@ -134,43 +147,52 @@ export default function EditProductPage() {
     <div className="max-w-lg mx-auto mt-32 p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Edit Product</h1>
       <form onSubmit={handleUpdateProduct} className="space-y-6">
+        {/* 🔹 პროდუქტის სახელის რედაქტირება */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Name</label>
+          <label className="block text-sm font-medium">Name</label>
           <input
             type="text"
             className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:text-white"
-            value={product.name}
-            onChange={(e) => setProduct((prev: any) => ({ ...prev, name: e.target.value }))}
+            value={product?.name}
+            onChange={(e) => setProduct((prev) => prev ? { ...prev, name: e.target.value } : prev)}
           />
         </div>
+
+        {/* 🔹 პროდუქტის აღწერის რედაქტირება */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Description</label>
+          <label className="block text-sm font-medium">Description</label>
           <textarea
             className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:text-white"
-            value={product.description}
-            onChange={(e) => setProduct((prev: any) => ({ ...prev, description: e.target.value }))}
+            value={product?.description}
+            onChange={(e) => setProduct((prev) => prev ? { ...prev, description: e.target.value } : prev)}
           />
         </div>
+
+        {/* 🔹 პროდუქტის ფასის რედაქტირება */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Price ($)</label>
+          <label className="block text-sm font-medium">Price ($)</label>
           <input
             type="number"
             className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:text-white"
-            value={product.price}
-            onChange={(e) => setProduct((prev: any) => ({ ...prev, price: parseFloat(e.target.value) }))} 
+            value={product?.price}
+            onChange={(e) =>
+              setProduct((prev) => prev ? { ...prev, price: parseFloat(e.target.value) } : prev)
+            }
           />
         </div>
 
         {/* 🔹 ძველი სურათების ჩვენება */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Current Images</label>
+          <label className="block text-sm font-medium">Current Images</label>
           <div className="flex overflow-x-auto space-x-4">
-            {product.images.map((image: string, index: number) => (
-              <img
+            {product?.images.map((image, index) => (
+              <Image
                 key={index}
                 src={image}
                 alt={`Product image ${index + 1}`}
-                className="w-24 h-24 object-cover rounded-lg shadow"
+                width={96}
+                height={96}
+                className="rounded-lg shadow object-cover"
               />
             ))}
           </div>
@@ -178,7 +200,7 @@ export default function EditProductPage() {
 
         {/* 🔹 ახალი სურათების ატვირთვა */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Upload New Images</label>
+          <label className="block text-sm font-medium">Upload New Images</label>
           <label className="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 dark:border-gray-600">
             <input
               type="file"
