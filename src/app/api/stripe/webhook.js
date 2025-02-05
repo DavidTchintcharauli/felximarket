@@ -1,5 +1,5 @@
 import stripe from '../../utils/stripe'
-import { supabase } from '../../utils/supabaseClient'
+// import { supabase } from '../utils/supabaseClient'
 import { buffer } from 'micro'
 
 export const config = {
