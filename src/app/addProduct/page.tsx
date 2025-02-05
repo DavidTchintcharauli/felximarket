@@ -47,7 +47,7 @@ export default function AddProductPage() {
       }
   
       const filePath = `products/${Date.now()}-${file.name}`;
-      const { data, error } = await supabase.storage
+      const { data: _data, error } = await supabase.storage
         .from("productimage")
         .upload(filePath, file);
   
