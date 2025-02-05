@@ -2,34 +2,12 @@
 
 import { useTranslation } from "react-i18next";
 import i18n from "@/i18";
-import { useCallback } from "react";
-import { LanguageButton } from "./components/common/LanguageButton";
-import { languages } from "./config/languages";
-import ThemeToggleButton from "./components/ThemeToggleButton";
 import { useAuth } from "./context/AuthContext";
 import Header from "./components/common/Header";
-import Link from "next/link";
 
 export default function Home() {
   const { t } = useTranslation();
-  const { user, loading, signOut } = useAuth();
-
-  const handleLanguageChange = useCallback((lng: string) => {
-    i18n.changeLanguage(lng);
-  }, []);
-
-  const handleSignOut = async () => {
-    try {
-      await signOut();
-      alert("Signed out successfully!");
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      } else {
-        alert("An unknown error occurred.");
-      }
-    }
-  };
+  const { loading, signOut } = useAuth();
 
   if (loading) return <div className="flex justify-center items-center min-h-screen text-xl font-semibold">Loading...</div>;
 
