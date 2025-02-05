@@ -8,7 +8,7 @@ import Link from "next/link";
 import { LanguageButton } from "./LanguageButton";
 import { languages } from "../../config/languages";
 import ThemeToggleButton from "../ThemeToggleButton";
-import { Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 export default function Header() {
   const { t } = useTranslation();
