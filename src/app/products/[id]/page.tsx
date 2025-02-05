@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useRouter, useParams } from "next/navigation";
+import { useCart } from "../../context/CartContext";
 
 type Product = {
   id: string;
@@ -15,6 +16,7 @@ type Product = {
 export default function ProductDetailsPage() {
   const router = useRouter();
   const { id } = useParams();
+  const { addToCart } = useCart();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -68,6 +70,13 @@ export default function ProductDetailsPage() {
 
       <p className="text-lg text-gray-700 dark:text-gray-300 mt-4">{product.description}</p>
       <p className="mt-2 text-2xl font-bold text-blue-600 dark:text-blue-400">${product.price.toFixed(2)}</p>
+
+      <button 
+        className="mt-4 bg-green-500 text-white py-2 px-4 rounded-lg"
+        onClick={() => addToCart(product)}
+      >
+        Add to Cart
+      </button>
 
       <button 
         className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg"
