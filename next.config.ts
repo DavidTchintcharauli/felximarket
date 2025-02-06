@@ -2,7 +2,12 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   images: {
-    domains: ["qriojldfgcamrpuuxijq.supabase.co"], // ✅ Supabase-ის დომენი დაამატე
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "qriojldfgcamrpuuxijq.supabase.co",
+      },
+    ],
   },
 };
 

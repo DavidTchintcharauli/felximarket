@@ -61,8 +61,58 @@ export default function ProductDetailsPage() {
     return <div className="flex justify-center items-center min-h-screen text-xl">Product not found</div>;
   }
 
-  const handleAddToCart = () => {
-    addToCart({ ...product, quantity: 1 });
+  const handleAddToCart = async () => {
+    if (!user) {
+      toast.error("You need to be logged in to add items to cart.");
+      return;
+    }
+
+    const cartItem = { ...product, quantity: 1 };
+
+    // 1️⃣ Supabase-დან კალათის ამოღება
+    const { data, error } = await supabase
+      .from("carts")
+      .select("items")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("🚨 Error fetching cart:", error);
+      toast.error("Failed to add item to cart.");
+      return;
+    }
+
+    let updatedCart = [];
+    if (!data) {
+      console.log("🛒 No cart found. Creating new cart...");
+      updatedCart = [cartItem];
+    } else {
+      const existingCart = data.items || [];
+      const existingItemIndex = existingCart.findIndex((item: Product) => item.id === product.id);
+
+      if (existingItemIndex !== -1) {
+        existingCart[existingItemIndex].quantity += 1;
+      } else {
+        existingCart.push(cartItem);
+      }
+      updatedCart = existingCart;
+    }
+
+    // 2️⃣ განახლებული კალათის შენახვა Supabase-ში
+    const { error: saveError } = await supabase
+      .from("carts")
+      .upsert(
+        { user_id: user.id, items: JSON.stringify(updatedCart) }, // JSON ფორმატში ვწერთ მონაცემს
+        { onConflict: "user_id" } // იმავე `user_id`-ზე ჩანაწერის განახლება
+      );
+
+    if (saveError) {
+      console.error("Error saving cart:", saveError);
+      toast.error("Failed to save cart.");
+      return;
+    }
+
+    toast.success(`✅ ${product.name} added to cart!`);
   };
 
   const handleEditProduct = () => {
