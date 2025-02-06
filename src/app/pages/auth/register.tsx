@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function RegisterPage() {
   const { signUp } = useAuth();
@@ -20,7 +21,7 @@ export default function RegisterPage() {
     try {
       await signUp(email, password);
       setSuccess(true);
-      alert("Registration successful! Please log in.");
+      toast.success("Registration successful! Please log in.");
       router.push("/auth/login");
     } catch (err) {
       if (err instanceof Error) {

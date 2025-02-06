@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-hot-toast";
 import Link from "next/link";
 
 type Product = {
@@ -95,7 +96,7 @@ export default function ProductsPage() {
 
   const handleDelete = async (productId: string) => {
     if (!user) {
-      alert("You must be logged in to delete a product");
+      toast.error("You must be logged in to delete a product");
       return;
     }
 
@@ -114,7 +115,7 @@ export default function ProductsPage() {
       }
 
       await fetchProducts();
-      alert("Product deleted successfully");
+      toast.success("Product deleted successfully");
     } catch (error) {
       console.error("Error deleting product:", error);
     } finally {

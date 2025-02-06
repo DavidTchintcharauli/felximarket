@@ -9,6 +9,7 @@ import { LanguageButton } from "./LanguageButton";
 import { languages } from "../../config/languages";
 import ThemeToggleButton from "../ThemeToggleButton";
 import { Menu, X } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 export default function Header() {
   const { t } = useTranslation();
@@ -22,12 +23,12 @@ export default function Header() {
   const handleSignOut = async () => {
     try {
       await signOut();
-      alert("Signed out successfully!");
+      toast.success("Signed out successfully!");
     } catch (error) {
       if (error instanceof Error) {
-        alert(error.message);
+        toast.error(error.message);
       } else {
-        alert("An unknown error occurred.");
+        toast.error("An unknown error occurred.");
       }
     }
   };

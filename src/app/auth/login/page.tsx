@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/app/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 export default function LoginPage() {
   const { signIn } = useAuth();
@@ -18,7 +19,7 @@ export default function LoginPage() {
 
     try {
       await signIn(email, password);
-      alert("Logged in successfully!");
+      toast.success("Logged in successfully!");
       router.push("/");
     } catch (err) {
       if (err instanceof Error) {

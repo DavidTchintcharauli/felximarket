@@ -63,7 +63,6 @@ export default function ProductDetailsPage() {
 
   const handleAddToCart = () => {
     addToCart({ ...product, quantity: 1 });
-    toast.success(`✅ ${product.name} added to cart!`);
   };
 
   const handleEditProduct = () => {

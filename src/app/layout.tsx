@@ -37,7 +37,7 @@ export default function RootLayout({
             >
               <Header />
               <main className="container mx-auto mt-6 px-4">{children}</main>
-              <Toaster position="top-right" reverseOrder={false} /> 
+              <Toaster position="bottom-right" reverseOrder={false} /> 
             </body>
           </CartProvider>
         </ThemeProvider>

@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { supabase } from "../utils/supabaseClient";
+import { toast } from "react-hot-toast";
 
 export default function Checkout() {
   const [loading, setLoading] = useState(false);
@@ -12,7 +13,7 @@ export default function Checkout() {
       const { data: { session } } = await supabase.auth.getSession();
 
       if (!session) {
-        alert("You must be logged in to proceed with checkout.");
+        toast.success("You must be logged in to proceed with checkout.");
         return;
       }
 
