@@ -3,10 +3,38 @@
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart } = useCart();
   const router = useRouter();
+  const [ loading, setLoading ] = useState(false);
+
+  const handleCheckout = async () => {
+    setLoading(true);
+    try {
+      const response = await fetch("../api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ cart }),
+      });
+  
+      console.log("Server Response:", response); // ✅ ნახე HTTP სტატუსი
+      const data = await response.json();
+      console.log("Response Data:", data); // ✅ Error message-ის შემოწმება
+  
+      if (!response.ok) {
+        throw new Error(data.error || "Failed to create checkout session.");
+      }
+  
+      window.location.href = data.url; 
+    } catch (error) {
+      console.error("Checkout Error:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
 
   return (
     <div className="max-w-2xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
@@ -39,7 +67,17 @@ export default function CartPage() {
               </button>
             </div>
           ))}
-          <button className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg" onClick={clearCart}>
+          <button 
+            className="mt-4 bg-blue-500 text-white py-2 px-4 rounded-lg w-full"
+            onClick={handleCheckout}
+            disabled={loading}
+          >
+            {loading ? "Processing..." : "Proceed to Checkout"}
+          </button>
+          <button 
+            className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg w-full"
+            onClick={clearCart}
+          >
             Clear Cart
           </button>
         </div>
