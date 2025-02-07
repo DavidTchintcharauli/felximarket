@@ -31,5 +31,8 @@
     "currentUser": "Current User:",
     "delete": "Delete",
     "deleting...": "Deleting...",
-    "noProductsAvailable": "No products available."
+    "noProductsAvailable": "No products available.",
+    "profile": "👤 Profile",
+    "cart": "🛒 Cart",
+    "yourCart": "Your Cart"
 }

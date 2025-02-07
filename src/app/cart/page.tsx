@@ -5,12 +5,14 @@ import { useCart } from "../context/CartContext";
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart } = useCart();
   const { user } = useAuth();
   const router = useRouter();
   const [ loading, setLoading ] = useState(false);
+  const { t } = useTranslation();
 
   const handleCheckout = async () => {
     if (!user) {
@@ -51,7 +53,7 @@ export default function CartPage() {
 
   return (
     <div className="max-w-2xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">Your Cart</h1>
+    <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">{t("yourCart")}</h1>
 
       {cart.length === 0 ? (
         <p className="text-center text-gray-600 dark:text-gray-300">Your cart is empty.</p>

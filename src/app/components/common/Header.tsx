@@ -164,7 +164,7 @@ export default function Header() {
                 <li>
                   <Link href="/cart">
                     <button className="w-full px-4 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600 transition">
-                      🛒 {t("cart")}
+                      {t("cart")}
                     </button>
                   </Link>
                 </li>
