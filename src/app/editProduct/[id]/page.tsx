@@ -8,7 +8,6 @@ import { toast } from "react-hot-toast";
 import { Loader2, Upload } from "lucide-react";
 import Image from "next/image";
 
-// ✅ `Product` ტიპის განსაზღვრა
 type Product = {
   id: string;
   name: string;
@@ -147,7 +146,6 @@ export default function EditProductPage() {
     <div className="max-w-lg mx-auto mt-32 p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Edit Product</h1>
       <form onSubmit={handleUpdateProduct} className="space-y-6">
-        {/* 🔹 პროდუქტის სახელის რედაქტირება */}
         <div>
           <label className="block text-sm font-medium">Name</label>
           <input
@@ -158,7 +156,6 @@ export default function EditProductPage() {
           />
         </div>
 
-        {/* 🔹 პროდუქტის აღწერის რედაქტირება */}
         <div>
           <label className="block text-sm font-medium">Description</label>
           <textarea
@@ -168,7 +165,6 @@ export default function EditProductPage() {
           />
         </div>
 
-        {/* 🔹 პროდუქტის ფასის რედაქტირება */}
         <div>
           <label className="block text-sm font-medium">Price ($)</label>
           <input
@@ -181,7 +177,6 @@ export default function EditProductPage() {
           />
         </div>
 
-        {/* 🔹 ძველი სურათების ჩვენება */}
         <div>
           <label className="block text-sm font-medium">Current Images</label>
           <div className="flex overflow-x-auto space-x-4">
@@ -198,7 +193,6 @@ export default function EditProductPage() {
           </div>
         </div>
 
-        {/* 🔹 ახალი სურათების ატვირთვა */}
         <div>
           <label className="block text-sm font-medium">Upload New Images</label>
           <label className="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 dark:border-gray-600">

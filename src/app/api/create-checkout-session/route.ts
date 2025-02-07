@@ -1,13 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import Stripe from "stripe";
-import { supabase } from "../../utils/supabaseClient"; // ✅ Supabase-ის კლიენტის იმპორტი
+import { supabase } from "../../utils/supabaseClient";
 
-// ✅ 1. გადაამოწმე, არის თუ არა STRIPE_SECRET_KEY
 if (!process.env.STRIPE_SECRET_KEY) {
   throw new Error("🚨 STRIPE_SECRET_KEY is missing in environment variables.");
 }
 
-// ✅ 2. გადაამოწმე, არის თუ არა NEXT_PUBLIC_APP_URL
 if (!process.env.NEXT_PUBLIC_APP_URL) {
   throw new Error("🚨 NEXT_PUBLIC_APP_URL is missing in environment variables.");
 }
@@ -30,6 +28,8 @@ export async function POST(req: NextRequest) {
   try {
     const { cart, userId, totalPrice } = await req.json();
     console.log("🛒 Cart Data:", cart);
+    console.log("👤 User ID:", userId);
+    console.log("💲 Total Price:", totalPrice);
 
     if (!cart || cart.length === 0) {
       return NextResponse.json({ error: "Cart is empty" }, { status: 400 });
@@ -56,44 +56,54 @@ export async function POST(req: NextRequest) {
     console.log("✅ Success URL:", successUrl);
     console.log("✅ Cancel URL:", cancelUrl);
 
-    // 🔹 Stripe Checkout სესიის შექმნა
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       line_items: lineItems,
       mode: "payment",
       success_url: successUrl,
       cancel_url: cancelUrl,
+      metadata: {
+        user_id: userId,
+      },
     });
 
     console.log("✅ Checkout Session Created:", session);
 
-    // 🔹 შეკვეთის მონაცემების Supabase-ში შენახვა
+
     if (userId) {
+      console.log("📥 Saving order to Supabase...");
       await saveOrderToSupabase(userId, cart, totalPrice);
+    } else {
+      console.error("❌ Error: No user ID provided.");
     }
 
-    return NextResponse.json({ url: session.url });
+    return NextResponse.json({ url: session.url, message: "Checkout session created successfully" });
   } catch (error: any) {
     console.error("🚨 Stripe Checkout Error:", error);
     return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
   }
 }
 
-// ✅ შეკვეთის შენახვა Supabase-ში
-const saveOrderToSupabase = async (userId: string, cart: CartItem[], totalPrice: number) => {
+const saveOrderToSupabase = async (userId: string, cart: CartItem[], totalPrice?: number) => {
+  console.log("💾 Trying to save order...");
+
+  const sanitizedPrice = totalPrice ?? cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+  console.log("💲 Final Total Price:", sanitizedPrice);
+
   const { error } = await supabase
     .from("orders")
     .insert([
       {
         user_id: userId,
-        items: cart,
-        total_price: totalPrice,
+        items: cart, 
+        total_price: sanitizedPrice,
         status: "pending",
       },
-    ]);
+    ])
+    .select()
 
   if (error) {
-    console.error("Error saving order:", error);
+    console.error("🚨 Error saving order:", error);
   } else {
     console.log("✅ Order successfully saved to Supabase");
   }

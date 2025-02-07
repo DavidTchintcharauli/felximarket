@@ -71,7 +71,7 @@ export default function ProductsPage() {
       );
 
       setProducts(productsWithImages);
-      setFilteredProducts(productsWithImages); // Initialize filtered products
+      setFilteredProducts(productsWithImages); 
     } catch (error) {
       console.error("Error fetching products:", error);
     } finally {
@@ -79,7 +79,6 @@ export default function ProductsPage() {
     }
   }, []);
 
-  // Search functionality
   useEffect(() => {
     const lowerCaseQuery = searchQuery.toLowerCase();
     const filtered = products.filter(
@@ -131,7 +130,6 @@ export default function ProductsPage() {
     <div className="max-w-4xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
       <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">{t("products")}</h1>
       
-      {/* Search Input */}
       <div className="mb-8">
         <input
           type="text"
@@ -143,7 +141,7 @@ export default function ProductsPage() {
       </div>
 
       {filteredProducts.length === 0 ? (
-        <p className="text-center text-gray-600 dark:text-gray-300">{t("noProductsAvailable.")}</p>
+        <p className="text-center text-gray-600 dark:text-gray-300">{t("noProductsAvailable")}</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredProducts.map((product) => (

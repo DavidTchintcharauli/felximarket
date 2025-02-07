@@ -8,7 +8,6 @@ import { createClient } from "@supabase/supabase-js";
 import { toast } from "react-hot-toast";
 import { Upload, Loader2 } from "lucide-react";
 
-// Supabase Client-ის ინიციალიზაცია
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
@@ -24,7 +23,6 @@ export default function AddProductPage() {
   const router = useRouter();
   const { t } = useTranslation();
 
-  // ფოტოების ცვლილება
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
       const files = Array.from(e.target.files);
@@ -59,7 +57,7 @@ export default function AddProductPage() {
       const { data: signedUrlData, error: signedError } = await supabase
         .storage
         .from("productimage")
-        .createSignedUrl(filePath, 60 * 60); // 1 საათით მოქმედი
+        .createSignedUrl(filePath, 60 * 60 * 60);
   
       if (signedError) {
         toast.error("Error generating signed URL.");

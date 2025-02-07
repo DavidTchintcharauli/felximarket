@@ -30,5 +30,6 @@
     "owner": "Owner:",
     "currentUser": "Current User:",
     "delete": "Delete",
-    "deleting...": "Deleting..."
+    "deleting...": "Deleting...",
+    "noProductsAvailable": "No products available."
 }

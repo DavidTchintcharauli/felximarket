@@ -1,10 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 import { NextResponse } from "next/server";
 
-// ✅ გამოიყენე მხოლოდ სერვერზე! (RLS-ს გვერდს აუვლის)
 const supabaseAdmin = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE! // ✅ Service Role გამოიყენე, რათა RLS არ მოქმედებდეს
+  process.env.SUPABASE_SERVICE_ROLE!
 );
 
 export async function POST(req: Request) {
@@ -15,7 +14,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    // ✅ შეცვალე `supabase` → `supabaseAdmin`
     const { data, error } = await supabaseAdmin
       .from("products")
       .insert([{ name, description, price, images, user_id }])

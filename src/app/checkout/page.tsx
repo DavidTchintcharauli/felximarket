@@ -17,7 +17,6 @@ export default function Checkout() {
         return;
       }
 
-      // ✅ Checkout API-ს გამოძახება
       const res = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },

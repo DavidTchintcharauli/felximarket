@@ -20,7 +20,7 @@ export default function ProductDetailsPage() {
   const router = useRouter();
   const params = useParams();
   const { addToCart } = useCart();
-  const { user } = useAuth(); // ავტორიზებული იუზერი
+  const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -66,30 +66,30 @@ export default function ProductDetailsPage() {
       toast.error("You need to be logged in to add items to cart.");
       return;
     }
-
+  
     const cartItem = { ...product, quantity: 1 };
-
-    // 1️⃣ Supabase-დან კალათის ამოღება
+  
     const { data, error } = await supabase
       .from("carts")
       .select("items")
       .eq("user_id", user.id)
       .maybeSingle();
-
+  
     if (error) {
       console.error("🚨 Error fetching cart:", error);
-      toast.error("Failed to add item to cart.");
+      toast.error("Failed to fetch cart.");
       return;
     }
-
+  
     let updatedCart = [];
     if (!data) {
       console.log("🛒 No cart found. Creating new cart...");
       updatedCart = [cartItem];
     } else {
-      const existingCart = data.items || [];
+      const existingCart = Array.isArray(data.items) ? data.items : [];
+  
       const existingItemIndex = existingCart.findIndex((item: Product) => item.id === product.id);
-
+  
       if (existingItemIndex !== -1) {
         existingCart[existingItemIndex].quantity += 1;
       } else {
@@ -97,26 +97,24 @@ export default function ProductDetailsPage() {
       }
       updatedCart = existingCart;
     }
-
-    // 2️⃣ განახლებული კალათის შენახვა Supabase-ში
+  
     const { error: saveError } = await supabase
       .from("carts")
-      .upsert(
-        { user_id: user.id, items: JSON.stringify(updatedCart) }, // JSON ფორმატში ვწერთ მონაცემს
-        { onConflict: "user_id" } // იმავე `user_id`-ზე ჩანაწერის განახლება
-      );
-
+      .update({ items: updatedCart })
+      .eq("user_id", user.id);
+  
     if (saveError) {
       console.error("Error saving cart:", saveError);
       toast.error("Failed to save cart.");
       return;
     }
-
+  
     toast.success(`✅ ${product.name} added to cart!`);
   };
+  
 
   const handleEditProduct = () => {
-    router.push(`/editProduct/${product.id}`); // გადამისამართება ედითინგის გვერდზე
+    router.push(`/editProduct/${product.id}`);
   };
 
   return (

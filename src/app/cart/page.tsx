@@ -2,26 +2,36 @@
 
 import Image from "next/image";
 import { useCart } from "../context/CartContext";
+import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart } = useCart();
+  const { user } = useAuth();
   const router = useRouter();
   const [ loading, setLoading ] = useState(false);
 
   const handleCheckout = async () => {
+    if (!user) {
+      console.error("🚨 User is not logged in! Cannot proceed to checkout.");
+      return;
+    }
+
     setLoading(true);
     try {
-      const response = await fetch("../api/create-checkout-session", {
+      const response = await fetch("/api/create-checkout-session", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ cart }),
+        body: JSON.stringify({ 
+          cart,
+          userId: user?.id,
+          totalPrice: cart.reduce((sum, item) => sum + item.price * item.quantity, 0), }),
       });
   
-      console.log("Server Response:", response); // ✅ ნახე HTTP სტატუსი
+      console.log("Server Response:", response); 
       const data = await response.json();
-      console.log("Response Data:", data); // ✅ Error message-ის შემოწმება
+      console.log("Response Data:", data);
   
       if (!response.ok) {
         throw new Error(data.error || "Failed to create checkout session.");
@@ -34,6 +44,9 @@ export default function CartPage() {
       setLoading(false);
     }
   };
+
+  console.log("🛒 Current cart value:", cart);
+  console.log("🛒 Cart type:", typeof cart);
   
 
   return (
@@ -50,8 +63,8 @@ export default function CartPage() {
                 <Image 
                   src={item.images[0]} 
                   alt={item.name} 
-                  layout="fill" // ✅ ავტომატური ზომების ოპტიმიზაცია
-                  objectFit="cover" // ✅ სურათის პროპორციის შენარჩუნება
+                  layout="fill"
+                  objectFit="cover" 
                   className="rounded-lg"
                 />
               </div>
