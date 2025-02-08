@@ -39,7 +39,7 @@ export default function RegisterPage() {
           placeholder="Email"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="p-2 border rounded"
+          className="p-2 text-black border rounded"
           required
         />
         <input
@@ -47,10 +47,10 @@ export default function RegisterPage() {
           placeholder="Password"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="p-2 border rounded"
+          className="p-2 border text-black rounded"
           required
         />
-        <button type="submit" className="px-4 py-2 bg-blue-500 text-white rounded">
+        <button type="submit" className="px-4 py-2 bg-blue-500 text-black rounded">
           Register
         </button>
       </form>

@@ -10,6 +10,7 @@ interface AuthContextProps {
   signIn: (email: string, password: string) => Promise<void>;
   signUp: (email: string, password: string) => Promise<void>;
   signOut: () => Promise<void>;
+  isPremium: boolean;
 }
 
 const AuthContext = createContext<AuthContextProps | undefined>(undefined);
@@ -17,37 +18,53 @@ const AuthContext = createContext<AuthContextProps | undefined>(undefined);
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPremium, setIsPremium] = useState(false);
 
   useEffect(() => {
     const fetchUser = async () => {
-      const { data, error } = await supabase.auth.getUser();
+      const { data: sessionData } = await supabase.auth.getSession();
+
+      if (!sessionData.session) {
+        console.warn("🚨 No active session found.");
+        setIsLoading(false);
+        return;
+      }
+
+      const { data: userData, error } = await supabase.auth.getUser();
       if (error) {
         console.error("🚨 Auth Error:", error);
+      } else {
+        setUser(userData?.user || null);
+
+        if (userData?.user) {
+          const { data: subData } = await supabase
+            .from("subscriptions")
+            .select("status")
+            .eq("user_id", userData.user.id)
+            .maybeSingle();
+  
+          setIsPremium(subData?.status === "active");
+        }
       }
-      setUser(data?.user ?? null);
+
       setIsLoading(false);
     };
 
     fetchUser();
 
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_, session: Session | null) => {
+    const { data: authListener } = supabase.auth.onAuthStateChange((event, session) => {
       console.log("🟢 Auth state changed:", session);
-      setUser(session?.user ?? null);
+      setUser(session?.user || null);
       setIsLoading(false);
     });
 
     return () => {
-      subscription?.unsubscribe();
+      authListener?.subscription.unsubscribe();
     };
   }, []);
 
   const signIn = async (email: string, password: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) throw new Error(error.message);
     setUser(data.user ?? null);
   };
@@ -65,7 +82,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, isLoading, signIn, signUp, signOut }}>
+    <AuthContext.Provider value={{ user, isLoading, signIn, signUp, signOut, isPremium  }}>
       {children}
     </AuthContext.Provider>
   );

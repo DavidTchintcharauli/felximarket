@@ -82,30 +82,46 @@ export default function ProductDetailsPage() {
     }
   
     let updatedCart = [];
+    
     if (!data) {
       console.log("🛒 No cart found. Creating new cart...");
       updatedCart = [cartItem];
-    } else {
-      const existingCart = Array.isArray(data.items) ? data.items : [];
   
-      const existingItemIndex = existingCart.findIndex((item: Product) => item.id === product.id);
+      const { error: insertError } = await supabase.from("carts").insert([
+        {
+          user_id: user.id,
+          items: updatedCart,
+        },
+      ]);
   
-      if (existingItemIndex !== -1) {
-        existingCart[existingItemIndex].quantity += 1;
-      } else {
-        existingCart.push(cartItem);
+      if (insertError) {
+        console.error("🚨 Error creating new cart:", insertError);
+        toast.error("Failed to create cart.");
+        return;
       }
-      updatedCart = existingCart;
-    }
   
-    const { error: saveError } = await supabase
+      toast.success(`✅ ${product.name} added to cart!`);
+      return;
+    } 
+  
+    const existingCart = Array.isArray(data.items) ? data.items : [];
+    const existingItemIndex = existingCart.findIndex((item: Product) => item.id === product.id);
+  
+    if (existingItemIndex !== -1) {
+      existingCart[existingItemIndex].quantity += 1;
+    } else {
+      existingCart.push(cartItem);
+    }
+    updatedCart = existingCart;
+  
+    const { error: updateError } = await supabase
       .from("carts")
       .update({ items: updatedCart })
       .eq("user_id", user.id);
   
-    if (saveError) {
-      console.error("Error saving cart:", saveError);
-      toast.error("Failed to save cart.");
+    if (updateError) {
+      console.error("🚨 Error updating cart:", updateError);
+      toast.error("Failed to update cart.");
       return;
     }
   

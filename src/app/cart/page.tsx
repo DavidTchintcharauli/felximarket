@@ -6,6 +6,7 @@ import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import { toast } from "react-hot-toast";
 
 export default function CartPage() {
   const { cart, removeFromCart, clearCart } = useCart();
@@ -16,7 +17,7 @@ export default function CartPage() {
 
   const handleCheckout = async () => {
     if (!user) {
-      console.error("🚨 User is not logged in! Cannot proceed to checkout.");
+      toast.error("🚨 User is not logged in! Cannot proceed to checkout.");
       return;
     }
 
