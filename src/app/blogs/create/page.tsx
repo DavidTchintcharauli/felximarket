@@ -19,7 +19,7 @@ export default function CreateBlogPage() {
   const ensureUserProfile = async () => {
     if (!user) return false;
 
-    const { data, error } = await supabase.from("profiles").select("id").eq("id", user.id).single();
+    const { error } = await supabase.from("profiles").select("id").eq("id", user.id).single();
 
     if (error) {
       console.warn("🚨 Profile not found, creating a new one...");
@@ -38,7 +38,7 @@ export default function CreateBlogPage() {
 
     if (images.length === 0) return uploadedImages;
 
-    for (let image of images) {
+    for (const image of images) {
       const fileExt = image.name.split(".").pop();
       const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
       const filePath = `blog_images/${fileName}`;

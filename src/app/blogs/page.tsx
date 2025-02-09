@@ -9,6 +9,12 @@ import { toast } from "react-hot-toast";
 import Link from "next/link";
 import { PlusCircle, Search, Trash2, Edit3 } from "lucide-react";
 
+interface Author {
+    first_name: string | null;
+    last_name: string | null;
+    email: string;
+  }
+
 type Blog = {
     id: string;
     title: string;
@@ -24,13 +30,13 @@ type Blog = {
 };
 
 export default function BlogsListPage() {
+    const { t } = useTranslation();
     const { user } = useAuth();
     const [blogs, setBlogs] = useState<Blog[] | null>(null);
     const [loading, setLoading] = useState(true);
     const [searchTerm, setSearchTerm] = useState("");
     const router = useRouter();
     const [isPremium, setIsPremium] = useState(false);
-    const { t } = useTranslation();
 
     useEffect(() => {
         if (!user) return;
@@ -78,20 +84,25 @@ export default function BlogsListPage() {
                 return;
             }
 
-            const formattedBlogs = data.map((blog: any) => {
-                const author = blog.profiles
-                    ? {
-                          first_name: blog.profiles.first_name || null,
-                          email: blog.profiles.email,
-                      }
-                    : { first_name: null, email: "Unknown Email" };
-
+            const formattedBlogs: Blog[] = data.map((blog: Record<string, unknown>) => {
+                const author: Author = blog.profiles
+                  ? {
+                      first_name: (blog.profiles as Record<string, unknown>).first_name as string | null,
+                      last_name: (blog.profiles as Record<string, unknown>).last_name as string | null,
+                      email: (blog.profiles as Record<string, unknown>).email as string,
+                    }
+                  : { first_name: null, last_name: null, email: "Unknown Email" };
+        
                 return {
-                    ...blog,
-                    images: Array.isArray(blog.images) ? blog.images : [],
-                    author,
+                  id: blog.id as string,
+                  title: blog.title as string,
+                  content: blog.content as string,
+                  images: Array.isArray(blog.images) ? (blog.images as string[]) : [],
+                  created_at: blog.created_at as string,
+                  author_id: blog.author_id as string,
+                  author,
                 };
-            });
+              });
 
             setBlogs(formattedBlogs);
             setLoading(false);
