@@ -20,7 +20,7 @@ type Order = {
 };
 
 export default function OrdersPage() {
-  const { user, loading } = useAuth();
+  const { user, isLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loadingOrders, setLoadingOrders] = useState(true);
   const { t } = useTranslation();
@@ -49,7 +49,7 @@ export default function OrdersPage() {
     fetchOrders();
   }, [user]);
 
-  if (loading || loadingOrders) {
+  if (isLoading || loadingOrders) {
     return <div className="text-center text-xl mt-10">{t("loadingOrders")}</div>;
   }
 
