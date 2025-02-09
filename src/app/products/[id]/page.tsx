@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useRouter, useParams } from "next/navigation";
 import { useTranslation } from "react-i18next";
-import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-hot-toast";
 
@@ -20,7 +19,6 @@ type Product = {
 export default function ProductDetailsPage() {
   const router = useRouter();
   const params = useParams();
-  const { addToCart } = useCart();
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);

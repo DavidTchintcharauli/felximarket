@@ -76,7 +76,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = async (items: CartItem | CartItem[]) => {
     setCart((prevCart) => {
-      let updatedCart = [...prevCart];
+      const updatedCart = [...prevCart];
 
       const itemsArray = Array.isArray(items) ? items : [items];
 

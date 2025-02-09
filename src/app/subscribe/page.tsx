@@ -1,7 +1,6 @@
 "use client";
 
 import { useAuth } from "../context/AuthContext";
-import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { supabase } from "../utils/supabaseClient";
@@ -9,7 +8,6 @@ import toast from "react-hot-toast";
 
 export default function SubscribePage() {
     const { user } = useAuth();
-    const router = useRouter();
     const [isPremium, setIsPremium] = useState(false);
     const { t } = useTranslation();
 

@@ -2,12 +2,6 @@ import { useState } from "react";
 import { ChevronDown, Globe } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-type LanguageButtonProps = {
-  language: string;
-  label: string;
-  onClick: (lng: string) => void;
-};
-
 export const LanguageButton: React.FC<{ onClick: (lng: string) => void }> = ({ onClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const { t } = useTranslation();
