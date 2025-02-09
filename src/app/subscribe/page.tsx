@@ -3,6 +3,7 @@
 import { useAuth } from "../context/AuthContext";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import { supabase } from "../utils/supabaseClient";
 import toast from "react-hot-toast";
 
@@ -10,6 +11,7 @@ export default function SubscribePage() {
     const { user } = useAuth();
     const router = useRouter();
     const [isPremium, setIsPremium] = useState(false);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!user) return;
@@ -30,7 +32,7 @@ export default function SubscribePage() {
 
     const handleSubscribe = async () => {
         if (!user) {
-            toast.error("You must be logged in to subscribe.");
+            toast.error(t("youMustBeLoggedInToSubscribe"));
             return;
         }
         
@@ -44,24 +46,24 @@ export default function SubscribePage() {
         if (data.url) {
             window.location.href = data.url;
         } else {
-            toast.error("Failed to create Stripe session.");
+            toast.error(t("failedToCreateStripeSession"));
         }
     };
 
     return (
         <div className="max-w-xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">Premium Subscription</h1>
+            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{("premiumSubscription")}</h1>
 
             {isPremium ? (
-                <p className="text-green-500 text-xl">✅ You already have a premium subscription!</p>
+                <p className="text-green-500 text-xl">{t("youAlreadyHaveAPremiumSubscription")}</p>
             ) : (
                 <>
-                    <p className="text-gray-600 dark:text-gray-300 mb-4">Unlock premium features for just $100.</p>
+                    <p className="text-gray-600 dark:text-gray-300 mb-4">{t("unlockPremiumFeaturesForJust$100")}</p>
                     <button
                         onClick={handleSubscribe}
                         className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
                     >
-                        Buy Premium – $100
+                        {t("buyPremium$100")}
                     </button>
                 </>
             )}

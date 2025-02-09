@@ -3,11 +3,13 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../utils/supabaseClient";
 import { useAuth } from "../context/AuthContext";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 
 export default function ProfilePage() {
   const { user, isPremium } = useAuth();
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
   const [profile, setProfile] = useState<{
     first_name: string;
     last_name: string;
@@ -51,7 +53,7 @@ export default function ProfilePage() {
   
     if (error) {
       console.error("🚨 Error fetching profile:", error);
-      toast.error("Failed to load profile.");
+      toast.error(t("failedToLoadProfile"));
     } else if (!data) {
       console.warn("🚨 Profile not found in database. Creating a new one...");
       await createDefaultProfile();
@@ -84,9 +86,9 @@ export default function ProfilePage() {
   
     if (error) {
       console.error("🚨 Error creating default profile:", error);
-      toast.error("Failed to create profile.");
+      toast.error(t("failedToCreateProfile"));
     } else {
-      console.log("✅ Default profile created successfully!");
+      toast.success(t("defaultProfileCreatedSuccessfully"));
       setProfile({
         ...defaultProfile,
         birth_date: defaultProfile.birth_date ?? null,
@@ -97,7 +99,7 @@ export default function ProfilePage() {
 
   const handleUpdateProfile = async () => {
     if (!user || !user.id || !profile.email){
-      toast.error("User is not authenticated.");
+      toast.error(t("userIsNotAuthenticated"));
       return;
     }
   
@@ -116,29 +118,29 @@ export default function ProfilePage() {
   
     if (error) {
       console.error("🚨 Error updating profile:", error);
-      toast.error("Failed to update profile.");
+      toast.error(t("failedToUpdateProfile"));
     } else {
-      toast.success("✅ Profile updated successfully!");
+      toast.success(t("profileUpdatedSuccessfully"));
     }
   
     setLoading(false);
   };
 
   if (!hydrated) {
-    return <div className="flex justify-center items-center min-h-screen text-xl">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen text-xl">{t("loading")}</div>;
   }
 
   return (
     <div className="max-w-xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">Your Profile</h1>
+      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">{t("yourProfile")}</h1>
 
       {hydrated && isPremium && (
-        <p className="text-center text-yellow-500 font-semibold">🔥 Premium User</p>
+        <p className="text-center text-yellow-500 font-semibold">🔥 {t("premiumUser")}</p>
       )}
 
       <div className="space-y-4">
         <div>
-          <label className="block text-gray-700 dark:text-gray-300">First Name</label>
+          <label className="block text-gray-700 dark:text-gray-300">{t("firstName")}</label>
           <input
             type="text"
             value={profile.first_name || ""}
@@ -147,7 +149,7 @@ export default function ProfilePage() {
           />
         </div>
         <div>
-          <label className="block text-gray-700 dark:text-gray-300">Last Name</label>
+          <label className="block text-gray-700 dark:text-gray-300">{t("lastName")}</label>
           <input
             type="text"
             value={profile.last_name || ""}
@@ -156,7 +158,7 @@ export default function ProfilePage() {
           />
         </div>
         <div>
-          <label className="block text-gray-700 dark:text-gray-300">Email</label>
+          <label className="block text-gray-700 dark:text-gray-300">{t("email")}</label>
           <input
             type="email"
             value={profile.email || ""}
@@ -165,7 +167,7 @@ export default function ProfilePage() {
           />
         </div>
         <div>
-          <label className="block text-gray-700 dark:text-gray-300">Phone</label>
+          <label className="block text-gray-700 dark:text-gray-300">{t("phone")}</label>
           <input
             type="tel"
             value={profile.phone || ""}
@@ -174,7 +176,7 @@ export default function ProfilePage() {
           />
         </div>
         <div>
-          <label className="block text-gray-700 dark:text-gray-300">Birth Date</label>
+          <label className="block text-gray-700 dark:text-gray-300">{t("birthDate")}</label>
           <input
             type="date"
             value={profile.birth_date || ""}
@@ -187,7 +189,7 @@ export default function ProfilePage() {
           disabled={loading}
           className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
         >
-          {loading ? "Updating..." : "Update Profile"}
+          {loading ? t("updating") : t("updateProfile")}
         </button>
       </div>
     </div>

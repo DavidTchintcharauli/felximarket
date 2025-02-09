@@ -57,7 +57,7 @@ export default function CartPage() {
     <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">{t("yourCart")}</h1>
 
       {cart.length === 0 ? (
-        <p className="text-center text-gray-600 dark:text-gray-300">Your cart is empty.</p>
+        <p className="text-center text-gray-600 dark:text-gray-300">{t("yourCartIsEmpty")}</p>
       ) : (
         <div>
           {cart.map((item) => (
@@ -79,7 +79,7 @@ export default function CartPage() {
                 className="bg-red-500 text-white py-1 px-3 rounded-lg"
                 onClick={() => removeFromCart(item.id)}
               >
-                Remove
+                {t("remove")}
               </button>
             </div>
           ))}
@@ -88,19 +88,19 @@ export default function CartPage() {
             onClick={handleCheckout}
             disabled={loading}
           >
-            {loading ? "Processing..." : "Proceed to Checkout"}
+            {loading ? t("processing") : t("proceedToCheckout")}
           </button>
           <button 
             className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg w-full"
             onClick={clearCart}
           >
-            Clear Cart
+            {t("clearCart")}
           </button>
         </div>
       )}
 
       <button className="mt-4 bg-gray-500 text-white py-2 px-4 rounded-lg" onClick={() => router.push("/products")}>
-        Back to Products
+        {t("backToProducts")}
       </button>
     </div>
   );

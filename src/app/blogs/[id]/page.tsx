@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { supabase } from "../../utils/supabaseClient";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 
 type Blog = {
@@ -24,6 +25,7 @@ export default function BlogDetailsPage() {
     const router = useRouter();
     const [blog, setBlog] = useState<Blog | null>(null);
     const [loading, setLoading] = useState(true);
+    const { t } = useTranslation();
 
     useEffect(() => {
         if (!id) {
@@ -50,7 +52,7 @@ export default function BlogDetailsPage() {
                 .maybeSingle();
 
             if (error || !data) {
-                toast.error("Blog not found.");
+                toast.error(t("blogNotFound"));
                 router.push("/blogs");
                 return;
             }
@@ -78,11 +80,11 @@ export default function BlogDetailsPage() {
     }, [id, router]);
 
     if (loading) {
-        return <div className="flex justify-center items-center min-h-screen text-xl">Loading...</div>;
+        return <div className="flex justify-center items-center min-h-screen text-xl">{t("loading")}</div>;
     }
 
     if (!blog) {
-        return <div className="flex justify-center items-center min-h-screen text-xl">Blog not found</div>;
+        return <div className="flex justify-center items-center min-h-screen text-xl">{t("blogNotFound")}</div>;
     }
 
     return (
@@ -110,7 +112,7 @@ export default function BlogDetailsPage() {
                 className="mt-6 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
                 onClick={() => router.push("/blogs")}
             >
-                🔙 Back to Blogs
+                {t("backToBlogs")}
             </button>
         </div>
     );

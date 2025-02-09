@@ -6,7 +6,6 @@ import { useCallback, useState } from "react";
 import { useAuth } from "../../context/AuthContext";
 import Link from "next/link";
 import { LanguageButton } from "./LanguageButton";
-import { languages } from "../../config/languages";
 import ThemeToggleButton from "../ThemeToggleButton";
 import { Menu, X } from "lucide-react";
 import { toast } from "react-hot-toast";
@@ -34,74 +33,64 @@ export default function Header() {
   };
 
   return (
-    <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-800 shadow-sm z-50">
+    <header className="fixed top-0 left-0 w-full bg-white dark:bg-gray-900 shadow-md z-50">
       <div className="container mx-auto flex justify-between items-center px-6 py-4">
         <div className="flex items-center gap-4">
           <Link
             href="/"
-            className="text-2xl font-bold text-gray-800 dark:text-white hover:text-blue-600 transition duration-300"
+            className="text-2xl font-bold text-gray-900 dark:text-white hover:text-blue-500 transition"
           >
             🏠 {t("site_name")}
           </Link>
         </div>
         <button
-          className="md:hidden text-gray-800 dark:text-white hover:text-blue-600 transition duration-300"
+          className="md:hidden text-gray-700 dark:text-white"
           onClick={() => setMenuOpen(!menuOpen)}
         >
           {menuOpen ? <X size={28} /> : <Menu size={28} />}
         </button>
-        <nav className="hidden md:flex space-x-4">
+        <nav className="hidden md:flex space-x-6">
           <Link href="/products">
-            <button className="px-4 py-2 bg-gradient-to-r from-blue-500 to-blue-600 text-white rounded-md hover:from-blue-600 hover:to-blue-700 transition duration-300 shadow-lg">
+            <button className="px-4 py-2 bg-indigo-500 text-white rounded-md hover:bg-indigo-600 transition">
               {t("products")}
             </button>
           </Link>
-          <Link href="/addProduct">
-            <button className="px-4 py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-md hover:from-green-600 hover:to-green-700 transition duration-300 shadow-lg">
-              {t("addProduct")}
+          <Link href="/blogs">
+            <button className="px-4 py-2 bg-teal-500 text-white rounded-md hover:bg-teal-600 transition">
+              {t("blogs")}
             </button>
           </Link>
-          <Link href="/blogs">
-            <button className="px-4 py-2 bg-gradient-to-r from-purple-500 to-purple-600 text-white rounded-md hover:from-purple-600 hover:to-purple-700 transition duration-300 shadow-lg">
-              {t("blogs")}
+          <Link href="/contact">
+            <button className="px-4 py-2 bg-lime-500 text-white rounded-md hover:bg-lime-600 transition">
+              {t("contact")}
             </button>
           </Link>
         </nav>
 
         <div className="hidden md:flex items-center gap-4">
-          {languages.map(({ code, label }) => (
-            <LanguageButton
-              key={code}
-              language={code}
-              label={label}
-              onClick={handleLanguageChange}
-            />
-          ))}
+          <LanguageButton onClick={handleLanguageChange} />
           <ThemeToggleButton />
 
           {user ? (
             <>
-              <span className="text-gray-800 dark:text-white hidden lg:block">
-                {user.email}
-              </span>
               <Link href="/cart">
-                <button className="relative px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-md hover:from-yellow-600 hover:to-yellow-700 transition duration-300 shadow-lg flex items-center gap-2">
+                <button className="px-4 py-2 bg-yellow-500 text-white rounded-md hover:bg-yellow-600 transition">
                   {t("cart")}
                 </button>
               </Link>
               <Link href="/profile">
-                <button className="px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-md hover:from-pink-600 hover:to-pink-700 transition duration-300 shadow-lg">
+                <button className="px-4 py-2 bg-purple-500 text-white rounded-md hover:bg-purple-600 transition">
                   {t("profile")}
                 </button>
               </Link>
               <Link href="/orders">
-                <button className="px-4 py-2 bg-gradient-to-r from-indigo-500 to-indigo-600 text-white rounded-md hover:from-indigo-600 hover:to-indigo-700 transition duration-300 shadow-lg">
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
                   {t("orders")}
                 </button>
               </Link>
               <button
                 onClick={handleSignOut}
-                className="px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 transition duration-300 shadow-lg"
+                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
               >
                 {t("logout")}
               </button>
@@ -109,12 +98,12 @@ export default function Header() {
           ) : (
             <>
               <Link href="/auth/login">
-                <button className="px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-md hover:from-teal-600 hover:to-teal-700 transition duration-300 shadow-lg">
+                <button className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600 transition">
                   {t("login")}
                 </button>
               </Link>
               <Link href="/auth/register">
-                <button className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-md hover:from-cyan-600 hover:to-cyan-700 transition duration-300 shadow-lg">
+                <button className="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition">
                   {t("registration")}
                 </button>
               </Link>
@@ -122,90 +111,53 @@ export default function Header() {
           )}
         </div>
       </div>
+
       {menuOpen && (
-        <nav className="md:hidden bg-white dark:bg-gray-700 shadow-lg py-4 px-6">
+        <nav className="md:hidden bg-white dark:bg-gray-800 shadow-md py-4 px-6">
           <ul className="space-y-4 text-center">
             <li>
               <Link
                 href="/products"
-                className="text-gray-800 dark:text-white hover:text-blue-600 transition duration-300"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
               >
                 {t("products")}
               </Link>
             </li>
             <li>
               <Link
-                href="/addProduct"
-                className="text-gray-800 dark:text-white hover:text-green-600 transition duration-300"
-              >
-                {t("add_product")}
-              </Link>
-            </li>
-            <li>
-              <Link
                 href="/blogs"
-                className="text-gray-800 dark:text-white hover:text-purple-600 transition duration-300"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
               >
                 {t("blogs")}
               </Link>
             </li>
-            <li className="flex justify-center gap-4">
-              {languages.map(({ code, label }) => (
-                <LanguageButton
-                  key={code}
-                  language={code}
-                  label={label}
-                  onClick={handleLanguageChange}
-                />
-              ))}
+            <li>
+              <Link
+                href="/contact"
+                className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
+              >
+                {t("contact")}
+              </Link>
+            </li>
+            <li className="flex justify-center">
+              <LanguageButton onClick={handleLanguageChange} />
             </li>
             <li className="flex justify-center">
               <ThemeToggleButton />
             </li>
             {user ? (
               <>
-                <li className="text-gray-800 dark:text-white">{user.email}</li>
-                <li>
-                  <Link href="/cart">
-                    <button className="w-full px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-md hover:from-yellow-600 hover:to-yellow-700 transition duration-300 shadow-lg">
-                      {t("cart")}
-                    </button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/profile">
-                    <button className="w-full px-4 py-2 bg-gradient-to-r from-pink-500 to-pink-600 text-white rounded-md hover:from-pink-600 hover:to-pink-700 transition duration-300 shadow-lg">
-                      {t("profile")}
-                    </button>
-                  </Link>
-                </li>
+                <li className="text-gray-700 dark:text-white">{user.email}</li>
                 <li>
                   <button
                     onClick={handleSignOut}
-                    className="w-full px-4 py-2 bg-gradient-to-r from-red-500 to-red-600 text-white rounded-md hover:from-red-600 hover:to-red-700 transition duration-300 shadow-lg"
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
                   >
                     {t("logout")}
                   </button>
                 </li>
               </>
-            ) : (
-              <>
-                <li>
-                  <Link href="/auth/login">
-                    <button className="w-full px-4 py-2 bg-gradient-to-r from-teal-500 to-teal-600 text-white rounded-md hover:from-teal-600 hover:to-teal-700 transition duration-300 shadow-lg">
-                      {t("login")}
-                    </button>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/auth/register">
-                    <button className="w-full px-4 py-2 bg-gradient-to-r from-cyan-500 to-cyan-600 text-white rounded-md hover:from-cyan-600 hover:to-cyan-700 transition duration-300 shadow-lg">
-                      {t("registration")}
-                    </button>
-                  </Link>
-                </li>
-              </>
-            )}
+            ) : null}
           </ul>
         </nav>
       )}

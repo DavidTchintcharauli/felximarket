@@ -35,12 +35,12 @@ export default function AddProductPage() {
   
     for (const file of images) {
       if (!file.type.startsWith("image/")) {
-        toast.error("Only images are allowed.");
+        toast.error(t("onlyImagesAreAllowed"));
         continue;
       }
   
       if (file.size > 5 * 1024 * 1024) {
-        toast.error("File size exceeds 5MB limit.");
+        toast.error(t("fileSizeExceeds5MBLimit"));
         continue;
       }
   
@@ -50,7 +50,7 @@ export default function AddProductPage() {
         .upload(filePath, file);
   
       if (error) {
-        toast.error("Image upload failed!");
+        toast.error(t("imageUploadFailed"));
         return null;
       }
   
@@ -60,7 +60,7 @@ export default function AddProductPage() {
         .createSignedUrl(filePath, 60 * 60 * 60);
   
       if (signedError) {
-        toast.error("Error generating signed URL.");
+        toast.error(t("errorGeneratingSignedURL"));
         return null;
       }
   
@@ -68,7 +68,7 @@ export default function AddProductPage() {
     }
   
     if (uploadedUrls.length === 0) {
-      toast.error("No images were uploaded.");
+      toast.error(t("noImagesWereUploaded"));
       return null;
     }
   
@@ -79,12 +79,12 @@ export default function AddProductPage() {
     e.preventDefault();
 
     if (!user) {
-      toast.error("You must be logged in to add a product.");
+      toast.error(t("youMustBeLoggedInToAddAProduct"));
       return;
     }
 
     setLoading(true);
-    toast.loading("Uploading images...");
+    toast.loading(t("uploadingImages"));
 
     const imageUrls = await uploadImages();
     if (!imageUrls) {
@@ -105,11 +105,11 @@ export default function AddProductPage() {
     });
 
     if (res.ok) {
-      toast.success("Product added successfully!");
+      toast.success(t("productAddedSuccessfully"));
       router.push("/products");
     } else {
       const errorData = await res.json();
-      toast.error("Failed to add product: " + errorData.error);
+      toast.error(t("failedToAddProduct") + errorData.error);
     }
 
     setLoading(false);
@@ -127,7 +127,7 @@ export default function AddProductPage() {
           </label>
           <input
             type="text"
-            className="mt-1 block w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
+            className="mt-1 block w-full text-black p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
@@ -139,7 +139,7 @@ export default function AddProductPage() {
             {t("description")}
           </label>
           <textarea
-            className="mt-1 block w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
+            className="mt-1 block w-full text-black p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           ></textarea>
@@ -151,7 +151,7 @@ export default function AddProductPage() {
           </label>
           <input
             type="number"
-            className="mt-1 block w-full p-3 border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
+            className="mt-1 block w-full p-3 text-black border rounded-lg bg-gray-100 dark:bg-gray-800 focus:ring-2 focus:ring-blue-500 dark:border-gray-600 dark:text-white"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
             required

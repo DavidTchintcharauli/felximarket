@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useRouter, useParams } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { useCart } from "../../context/CartContext";
 import { useAuth } from "../../context/AuthContext";
 import { toast } from "react-hot-toast";
@@ -23,6 +24,7 @@ export default function ProductDetailsPage() {
   const { user } = useAuth();
   const [product, setProduct] = useState<Product | null>(null);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     const productId = params?.id;
@@ -54,11 +56,11 @@ export default function ProductDetailsPage() {
   }, [params?.id, router]);
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen text-xl">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen text-xl">{t("Loading...")}</div>;
   }
 
   if (!product) {
-    return <div className="flex justify-center items-center min-h-screen text-xl">Product not found</div>;
+    return <div className="flex justify-center items-center min-h-screen text-xl">{t("productNotFound")}</div>;
   }
 
   const handleAddToCart = async () => {
@@ -148,7 +150,7 @@ export default function ProductDetailsPage() {
             />
           ))
         ) : (
-          <p className="text-gray-400">No images available</p>
+          <p className="text-gray-400">{t("noImagesAvailable")}</p>
         )}
       </div>
 
@@ -160,7 +162,7 @@ export default function ProductDetailsPage() {
           className="flex-1 bg-green-500 text-white py-2 px-4 rounded-lg hover:bg-green-600 transition"
           onClick={handleAddToCart}
         >
-          🛒 Add to Cart
+          {t("addToCart")}
         </button>
 
         {user?.id === product.user_id && (
@@ -168,7 +170,7 @@ export default function ProductDetailsPage() {
             className="flex-1 bg-yellow-500 text-white py-2 px-4 rounded-lg hover:bg-yellow-600 transition"
             onClick={handleEditProduct}
           >
-            ✏️ Edit Product
+            {t("editProduct")}
           </button>
         )}
 
@@ -176,7 +178,7 @@ export default function ProductDetailsPage() {
           className="flex-1 bg-gray-500 text-white py-2 px-4 rounded-lg hover:bg-gray-600 transition"
           onClick={() => router.push("/products")}
         >
-          🔙 Back to Products
+          {t("backToProducts")}
         </button>
       </div>
     </div>

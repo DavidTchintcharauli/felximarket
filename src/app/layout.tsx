@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "./context/ThemeContext";
 import { AuthProvider } from "./context/AuthContext";
-import { CartProvider } from "./context/CartContext"
+import { CartProvider } from "./context/CartContext";
 import { Toaster } from "react-hot-toast";
 import Header from "./components/common/Header";
 import "./globals.css";
@@ -28,20 +28,20 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <AuthProvider>
-        <ThemeProvider>
-          <CartProvider>
-            <body
-              className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-            >
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      >
+        <AuthProvider>
+          <ThemeProvider>
+            <CartProvider>
               <Header />
               <main className="container mx-auto mt-6 px-4">{children}</main>
-              <Toaster position="bottom-right" reverseOrder={false} /> 
-            </body>
-          </CartProvider>
-        </ThemeProvider>
-      </AuthProvider>
+              <Toaster position="bottom-right" reverseOrder={false} />
+            </CartProvider>
+          </ThemeProvider>
+        </AuthProvider>
+      </body>
     </html>
   );
 }

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
 import { useRouter } from "next/navigation";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 
 export default function CreateBlogPage() {
@@ -13,6 +14,7 @@ export default function CreateBlogPage() {
   const [content, setContent] = useState("");
   const [images, setImages] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
+  const { t } = useTranslation();
 
   const ensureUserProfile = async () => {
     if (!user) return false;
@@ -24,7 +26,7 @@ export default function CreateBlogPage() {
       const { error: insertError } = await supabase.from("profiles").insert([{ id: user.id, email: user.email }]);
       if (insertError) {
         console.error("🚨 Error creating profile:", insertError);
-        toast.error("Failed to create user profile.");
+        toast.error(t("FailedToCreateUserProfile"));
         return false;
       }
     }
@@ -45,7 +47,7 @@ export default function CreateBlogPage() {
 
       if (error) {
         console.error("🚨 Image Upload Error:", error);
-        toast.error("Failed to upload image.");
+        toast.error(t("failedToUploadImage"));
         return [];
       }
 
@@ -58,7 +60,7 @@ export default function CreateBlogPage() {
 
   const handleCreateBlog = async () => {
     if (!user) {
-      toast.error("You must be logged in to create a blog.");
+      toast.error(("youMustBeLoggedInToCreateABlog"));
       return;
     }
 
@@ -83,29 +85,29 @@ export default function CreateBlogPage() {
 
     if (error) {
       console.error("🚨 Error creating blog:", error);
-      toast.error("Failed to create blog.");
+      toast.error(t("failedToCreateBlog"));
       setLoading(false);
       return;
     }
 
-    toast.success("✅ Blog created successfully!");
+    toast.success(t("blogCreatedSuccessfully"));
     router.push("/blogs");
   };
 
   return (
     <div className="max-w-2xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
-      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">Create Blog</h1>
+      <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">{t("createBlog")}</h1>
 
       <input
         type="text"
-        placeholder="Title"
+        placeholder={t("title")}
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         className="w-full text-gray-700 p-2 border rounded-lg mb-4"
       />
 
       <textarea
-        placeholder="Content"
+        placeholder={t("content")}
         value={content}
         onChange={(e) => setContent(e.target.value)}
         className="w-full text-gray-700 p-2 border rounded-lg mb-4"
@@ -119,7 +121,7 @@ export default function CreateBlogPage() {
         disabled={loading}
         className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition"
       >
-        {loading ? "Creating..." : "Create Blog"}
+        {loading ? t("creating") : t("createBlog")}
       </button>
     </div>
   );

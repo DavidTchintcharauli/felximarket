@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { supabase } from "../../utils/supabaseClient";
 import { useAuth } from "../../context/AuthContext";
+import { useTranslation } from "react-i18next";
 import { toast } from "react-hot-toast";
 import { Loader2, Upload } from "lucide-react";
 import Image from "next/image";
@@ -27,10 +28,11 @@ export default function EditProductPage() {
   const [loading, setLoading] = useState(true);
   const [updating, setUpdating] = useState(false);
   const [newImages, setNewImages] = useState<File[]>([]);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!productId) {
-      toast.error("Invalid product ID.");
+      toast.error(t("invalidProductID"));
       router.push("/products");
       return;
     }
@@ -43,13 +45,13 @@ export default function EditProductPage() {
         .single();
 
       if (error || !data) {
-        toast.error("Product not found.");
+        toast.error(t("productNotFound"));
         router.push("/products");
         return;
       }
 
       if (data.user_id !== user?.id) {
-        toast.error("You are not authorized to edit this product.");
+        toast.error(t("youAreNotAuthorizedToEditThisProduct"));
         router.push("/products");
         return;
       }
@@ -77,7 +79,7 @@ export default function EditProductPage() {
         .upload(filePath, file);
 
       if (error) {
-        toast.error("Image upload failed!");
+        toast.error(t("imageUploadFailed"));
         return null;
       }
 
@@ -87,7 +89,7 @@ export default function EditProductPage() {
         .createSignedUrl(filePath, 60 * 60);
 
       if (signedError) {
-        toast.error("Error generating signed URL.");
+        toast.error(t("errorGeneratingSignedURL"));
         return null;
       }
 
@@ -113,7 +115,7 @@ export default function EditProductPage() {
 
     const updatedPrice = parseFloat(product.price.toString());
     if (isNaN(updatedPrice) || updatedPrice <= 0) {
-      toast.error("Invalid price value.");
+      toast.error(t("invalidPriceValue"));
       setUpdating(false);
       return;
     }
@@ -129,9 +131,9 @@ export default function EditProductPage() {
       .eq("id", product.id);
 
     if (error) {
-      toast.error("Failed to update product.");
+      toast.error(t("failedToUpdateProduct"));
     } else {
-      toast.success("Product updated successfully!");
+      toast.success(t("productUpdatedSuccessfully"));
       router.push(`/products/${product.id}`);
     }
 
@@ -139,37 +141,37 @@ export default function EditProductPage() {
   };
 
   if (loading) {
-    return <div className="flex justify-center items-center min-h-screen text-xl">Loading...</div>;
+    return <div className="flex justify-center items-center min-h-screen text-xl">{t("loading")}</div>;
   }
 
   return (
     <div className="max-w-lg mx-auto mt-32 p-8 bg-white dark:bg-gray-900 rounded-lg shadow-lg">
-      <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">Edit Product</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center text-gray-900 dark:text-white">{t("editProduct")}</h1>
       <form onSubmit={handleUpdateProduct} className="space-y-6">
         <div>
-          <label className="block text-sm font-medium">Name</label>
+          <label className="block text-sm text-black font-medium">{t("name")}</label>
           <input
             type="text"
-            className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:text-white"
+            className="w-full p-3 border text-black rounded-lg dark:bg-gray-800 dark:text-white"
             value={product?.name}
             onChange={(e) => setProduct((prev) => prev ? { ...prev, name: e.target.value } : prev)}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Description</label>
+          <label className="block text-sm text-black font-medium">{t("description")}</label>
           <textarea
-            className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:text-white"
+            className="w-full p-3 border text-black rounded-lg dark:bg-gray-800 dark:text-white"
             value={product?.description}
             onChange={(e) => setProduct((prev) => prev ? { ...prev, description: e.target.value } : prev)}
           />
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Price ($)</label>
+          <label className="block text-sm text-black font-medium">{t("price")}</label>
           <input
             type="number"
-            className="w-full p-3 border rounded-lg dark:bg-gray-800 dark:text-white"
+            className="w-full p-3 border text-black rounded-lg dark:bg-gray-800 dark:text-white"
             value={product?.price}
             onChange={(e) =>
               setProduct((prev) => prev ? { ...prev, price: parseFloat(e.target.value) } : prev)
@@ -177,8 +179,8 @@ export default function EditProductPage() {
           />
         </div>
 
-        <div>
-          <label className="block text-sm font-medium">Current Images</label>
+        <div> 
+          <label className="block text-sm text-black font-medium">{t("currentImages")}</label>
           <div className="flex overflow-x-auto space-x-4">
             {product?.images.map((image, index) => (
               <Image
@@ -194,8 +196,8 @@ export default function EditProductPage() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium">Upload New Images</label>
-          <label className="flex items-center justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 dark:border-gray-600">
+          <label className="block text-sm text-black font-medium">{t("uploadNewImages")}</label>
+          <label className="flex items-center text-black justify-center w-full h-32 border-2 border-dashed rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-800 dark:border-gray-600">
             <input
               type="file"
               multiple
@@ -206,7 +208,7 @@ export default function EditProductPage() {
             <div className="flex flex-col items-center justify-center space-y-2">
               <Upload className="w-8 h-8 text-gray-500 dark:text-gray-300" />
               <span className="text-sm text-gray-600 dark:text-gray-400">
-                Click or drag files here to upload
+                {t("clickOrDragFilesHereToUpload")}
               </span>
             </div>
           </label>
@@ -217,7 +219,7 @@ export default function EditProductPage() {
           className="w-full flex items-center justify-center bg-yellow-500 text-white py-3 rounded-lg font-semibold hover:bg-yellow-600 transition disabled:opacity-50"
           disabled={updating}
         >
-          {updating ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : "Update Product"}
+          {updating ? <Loader2 className="animate-spin h-5 w-5 mr-2" /> : t("updateProduct")}
         </button>
       </form>
     </div>
