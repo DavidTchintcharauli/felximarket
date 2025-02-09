@@ -10,27 +10,31 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY as string, {
   apiVersion: "2025-01-27.acacia",
 });
 
-const saveSubscriptionToSupabase = async (userId: string) => {
-    const { data, error } = await supabase
-      .from("subscriptions")
-      .insert([{ user_id: userId, status: "active" }]);
-  
-    if (error) {
-      console.error("🚨 Error saving subscription:", error);
-    } else {
-      console.log("✅ Subscription saved for user:", userId);
-    }
-  };
+const saveSubscriptionToSupabase = async (userId: string): Promise<void> => {
+  const { error } = await supabase
+    .from("subscriptions")
+    .insert([{ user_id: userId, status: "active" }]);
 
-export async function POST(req: NextRequest) {
+  if (error) {
+    console.error("🚨 Error saving subscription:", error);
+  } else {
+    console.log("✅ Subscription saved for user:", userId);
+  }
+};
+
+interface RequestBody {
+  userId: string;
+}
+
+export async function POST(req: NextRequest): Promise<NextResponse> {
   try {
-    const { userId } = await req.json();
+    const body: RequestBody = await req.json();
 
-    if (!userId) {
+    if (!body.userId) {
       return NextResponse.json({ error: "User ID is required" }, { status: 400 });
     }
 
-    console.log("👤 User ID:", userId);
+    console.log("👤 User ID:", body.userId);
 
     const successUrl = `${process.env.NEXT_PUBLIC_APP_URL}/premium-success`;
     const cancelUrl = `${process.env.NEXT_PUBLIC_APP_URL}/cancel`;
@@ -38,7 +42,6 @@ export async function POST(req: NextRequest) {
     console.log("✅ Success URL:", successUrl);
     console.log("✅ Cancel URL:", cancelUrl);
 
-    // 🔥 **Subscription Stripe Session**
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ["card"],
       mode: "subscription",
@@ -52,7 +55,7 @@ export async function POST(req: NextRequest) {
             recurring: {
               interval: "month",
             },
-            unit_amount: 10000, // **$100 per month**
+            unit_amount: 10000, 
           },
           quantity: 1,
         },
@@ -60,18 +63,22 @@ export async function POST(req: NextRequest) {
       success_url: successUrl,
       cancel_url: cancelUrl,
       metadata: {
-        user_id: userId,
+        user_id: body.userId,
         type: "subscription",
       },
     });
 
     console.log("✅ Subscription Checkout Created:", session);
 
-    await saveSubscriptionToSupabase(userId);
+    await saveSubscriptionToSupabase(body.userId);
 
     return NextResponse.json({ url: session.url, message: "Subscription session created successfully" });
-  } catch (error: any) {
-    console.error("🚨 Stripe Subscription Error:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+  } catch (error) {
+    if (error instanceof Error) {
+      console.error("🚨 Stripe Subscription Error:", error);
+      return NextResponse.json({ error: error.message }, { status: 500 });
+    }
+    console.error("🚨 Unknown Error occurred");
+    return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
   }
 }

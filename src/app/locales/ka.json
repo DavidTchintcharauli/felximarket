@@ -196,5 +196,6 @@
     "blogCreatedSuccessfully": "ბლოგი წარმატებით შეიქმნა!",
     "failedToCreateBlog": "ბლოგის შექმნა ვერ მოხერხდა.",
     "youMustBeLoggedInToCreateABlog": "ბლოგის შექმნისთვის თქვენ უნდა იყოთ ავტორიზებული.",
-    "FailedToCreateUserProfile": "პროფილის შექმნა ვერ მოხერხდა."
+    "FailedToCreateUserProfile": "პროფილის შექმნა ვერ მოხერხდა.",
+    "paymentSuccessful!Redirectin": "გადახდა წარმატებით შესრულდა! გთხოვთ, დაელოდოთ..."
   }

@@ -78,9 +78,15 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ url: session.url, message: "Checkout session created successfully" });
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error("🚨 Stripe Checkout Error:", error);
-    return NextResponse.json({ error: error.message || "Internal Server Error" }, { status: 500 });
+
+    let errorMessage = "Internal Server Error";
+    if (error instanceof Error) {
+      errorMessage = error.message;
+    }
+
+    return NextResponse.json({ error: errorMessage || "Internal Server Error" }, { status: 500 });
   }
 }
 

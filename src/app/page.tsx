@@ -10,21 +10,23 @@ import Link from "next/link";
 export default function Home() {
   const { t } = useTranslation();
   const { isLoading, user } = useAuth();
-      const [isPremium, setIsPremium] = useState(false);
-          useEffect(() => {
-              if (!user) return;
-              const checkPremium = async () => {
-                  const { data, error } = await supabase
-                      .from("premium_users")
-                      .select("user_id")
-                      .eq("user_id", user.id)
-                      .maybeSingle();
-      
-                  if (data) setIsPremium(true);
-              };
-      
-              checkPremium();
-          }, [user]);
+  const [isPremium, setIsPremium] = useState(false);
+
+  useEffect(() => {
+    if (!user) return;
+
+    const checkPremium = async () => {
+      const { data } = await supabase
+        .from("premium_users")
+        .select("user_id")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (data) setIsPremium(true);
+    };
+
+    checkPremium();
+  }, [user]);
 
   if (isLoading) {
     return (
@@ -50,7 +52,6 @@ export default function Home() {
       </div>
 
       <div className="mt-16 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 w-full max-w-7xl mx-auto px-6">
-        
         <FeatureCard
           title={t("products_title")}
           description={t("products_desc")}
@@ -67,50 +68,27 @@ export default function Home() {
           color="bg-green-500"
         />
 
-        <FeatureCard
-          title={t("premium_title")}
-          description={t("premium_desc")}
-          link="/subscribe"
-          buttonText={t("get_premium")}
-          color="bg-yellow-500"
-          hidden={isPremium}
-        />
+        {!isPremium && (
+          <FeatureCard
+            title={t("premium_title")}
+            description={t("premium_desc")}
+            link="/subscribe"
+            buttonText={t("get_premium")}
+            color="bg-yellow-500"
+          />
+        )}
 
-        <FeatureCard
-          title={t("language_title")}
-          description={t("language_desc")}
-          color="bg-purple-500"
-        />
+        <FeatureCard title={t("language_title")} description={t("language_desc")} color="bg-purple-500" />
 
-        <FeatureCard
-          title={t("theme_title")}
-          description={t("theme_desc")}
-          color="bg-gray-500"
-        />
+        <FeatureCard title={t("theme_title")} description={t("theme_desc")} color="bg-gray-500" />
 
-        <FeatureCard
-          title={t("cart_title")}
-          description={t("cart_desc")}
-          color="bg-pink-500"
-        />
+        <FeatureCard title={t("cart_title")} description={t("cart_desc")} color="bg-pink-500" />
 
-        <FeatureCard
-          title={t("profile_title")}
-          description={t("profile_desc")}
-          color="bg-teal-500"
-        />
+        <FeatureCard title={t("profile_title")} description={t("profile_desc")} color="bg-teal-500" />
 
-        <FeatureCard
-          title={t("orders_title")}
-          description={t("orders_desc")}
-          color="bg-orange-500"
-        />
+        <FeatureCard title={t("orders_title")} description={t("orders_desc")} color="bg-orange-500" />
 
-        <FeatureCard
-          title={t("search_title")}
-          description={t("search_desc")}
-          color="bg-red-500"
-        />
+        <FeatureCard title={t("search_title")} description={t("search_desc")} color="bg-red-500" />
       </div>
 
       <div className="mt-16 flex flex-wrap justify-center gap-6 pb-12">
@@ -122,13 +100,21 @@ export default function Home() {
   );
 }
 
-function FeatureCard({ title, description, link, buttonText, color, hidden }: any) {
-  if (hidden) return null;
+// FeatureCard კომპონენტის ტიპიზაცია
+interface FeatureCardProps {
+  title: string;
+  description: string;
+  link?: string;
+  buttonText?: string;
+  color: string;
+}
+
+const FeatureCard: React.FC<FeatureCardProps> = ({ title, description, link, buttonText, color }) => {
   return (
     <div className="relative p-6 bg-white/10 backdrop-blur-lg rounded-xl shadow-lg text-center transition hover:scale-105 hover:bg-white/20">
       <h3 className="text-xl font-semibold text-white drop-shadow-md">{title}</h3>
       <p className="mt-2 text-gray-200">{description}</p>
-      {link && (
+      {link && buttonText && (
         <Link href={link}>
           <button className={`mt-4 px-6 py-3 text-white rounded-lg shadow-lg hover:brightness-110 transition ${color}`}>
             {buttonText}
@@ -137,9 +123,16 @@ function FeatureCard({ title, description, link, buttonText, color, hidden }: an
       )}
     </div>
   );
+};
+
+// CTAButton კომპონენტის ტიპიზაცია
+interface CTAButtonProps {
+  link: string;
+  text: string;
+  color: string;
 }
 
-function CTAButton({ link, text, color }: any) {
+const CTAButton: React.FC<CTAButtonProps> = ({ link, text, color }) => {
   return (
     <Link href={link}>
       <button className={`px-6 py-3 text-white rounded-lg shadow-lg hover:brightness-110 transition ${color}`}>
@@ -147,4 +140,4 @@ function CTAButton({ link, text, color }: any) {
       </button>
     </Link>
   );
-}
+};

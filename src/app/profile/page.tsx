@@ -40,17 +40,17 @@ export default function ProfilePage() {
       console.warn("⚠️ No user authenticated.");
       return;
     }
-  
+
     console.log(`🛒 Fetching profile for user: ${user.id}`);
-  
+
     setLoading(true);
-  
+
     const { data, error } = await supabase
       .from("profiles")
       .select("first_name, last_name, phone, birth_date, email")
       .eq("id", user.id)
       .maybeSingle();
-  
+
     if (error) {
       console.error("🚨 Error fetching profile:", error);
       toast.error(t("failedToLoadProfile"));
@@ -60,7 +60,7 @@ export default function ProfilePage() {
     } else {
       console.log("✅ Profile Data:", data);
       setProfile({
-        first_name: data?.first_name ?? "", 
+        first_name: data?.first_name ?? "",
         last_name: data?.last_name ?? "",
         phone: data?.phone ?? "",
         birth_date: data?.birth_date ? data.birth_date.split("T")[0] : "",
@@ -72,7 +72,7 @@ export default function ProfilePage() {
 
   const createDefaultProfile = async () => {
     if (!user || !user.id) return;
-  
+
     const defaultProfile = {
       id: user.id,
       first_name: "",
@@ -81,9 +81,9 @@ export default function ProfilePage() {
       birth_date: null,
       email: user.email || "",
     };
-  
+
     const { error } = await supabase.from("profiles").insert([defaultProfile]);
-  
+
     if (error) {
       console.error("🚨 Error creating default profile:", error);
       toast.error(t("failedToCreateProfile"));
@@ -95,16 +95,16 @@ export default function ProfilePage() {
       });
     }
   };
-  
+
 
   const handleUpdateProfile = async () => {
-    if (!user || !user.id || !profile.email){
+    if (!user || !user.id || !profile.email) {
       toast.error(t("userIsNotAuthenticated"));
       return;
     }
-  
+
     setLoading(true);
-    
+
     const { error } = await supabase
       .from("profiles")
       .upsert({
@@ -115,14 +115,14 @@ export default function ProfilePage() {
         birth_date: profile.birth_date || null,
         email: profile.email,
       });
-  
+
     if (error) {
       console.error("🚨 Error updating profile:", error);
       toast.error(t("failedToUpdateProfile"));
     } else {
       toast.success(t("profileUpdatedSuccessfully"));
     }
-  
+
     setLoading(false);
   };
 

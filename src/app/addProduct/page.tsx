@@ -147,7 +147,7 @@ export default function AddProductPage() {
 
         <div>
           <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">
-            {t("price")} ($)
+            {t("price")}
           </label>
           <input
             type="number"

@@ -199,5 +199,6 @@
     "blogCreatedSuccessfully": "Blog created successfully!",
     "failedToCreateBlog": "Failed to create blog.",
     "youMustBeLoggedInToCreateABlog": "You must be logged in to create a blog.",
-    "FailedToCreateUserProfile": "Failed to create user profile."
+    "FailedToCreateUserProfile": "Failed to create user profile.",
+    "paymentSuccessful!Redirecting": "Payment successful! Redirecting..."
 }

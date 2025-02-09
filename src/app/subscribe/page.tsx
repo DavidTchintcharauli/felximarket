@@ -52,12 +52,12 @@ export default function SubscribePage() {
 
     return (
         <div className="max-w-xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md text-center">
-            <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{("premiumSubscription")}</h1>
 
             {isPremium ? (
                 <p className="text-green-500 text-xl">{t("youAlreadyHaveAPremiumSubscription")}</p>
             ) : (
                 <>
+                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-6">{t("premiumSubscription")}</h1>
                     <p className="text-gray-600 dark:text-gray-300 mb-4">{t("unlockPremiumFeaturesForJust$100")}</p>
                     <button
                         onClick={handleSubscribe}
