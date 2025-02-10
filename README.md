@@ -16,6 +16,15 @@ FelxiMarket is a modern e-commerce platform built with **Next.js + Supabase + St
 
 ## Table of Contents
 - [Overview](#overview)
+- [Features](#Features)
+- [FileStructure](#File Structure)
+- [Installationandlaunch](#Installation and launch)
+- [Cloningaproject](#Cloning a project)
+- [MainFeatures](#Main Features)
+- [Note](#Note)
+- [LiveDemo](#Live Demo)
+- [Installation](#Installation)
+- [DevelopmentServer](#Development Server)
 
 ## 🌟 Overview  
 A full-stack e-commerce solution with:  
@@ -237,7 +246,3 @@ You can see the demo version of the project here:
   npm run dev
   ```
   2. **Navigate to http://localhost:3000 in your browser.**
-
-## Demo
-  **You can see a live demo of the project:** 
-    - <https://felximarket-pxln.vercel.app>
