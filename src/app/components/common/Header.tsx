@@ -139,8 +139,6 @@ export default function Header() {
                 {t("contact")}
               </Link>
             </li>
-
-            {/* ენისა და თემის ღილაკები */}
             <li className="flex justify-center gap-4 mt-4">
               <LanguageButton onClick={handleLanguageChange} />
               <ThemeToggleButton />
@@ -148,12 +146,9 @@ export default function Header() {
 
             {user ? (
               <>
-                {/* მომხმარებლის იმეილი */}
                 <li className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
                   {user.email}
                 </li>
-
-                {/* ღილაკები */}
                 <li className="grid grid-cols-2 gap-3 mt-4">
                   <Link href="/cart">
                     <button className="w-full py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-300">
