@@ -132,6 +132,7 @@ FlexiMarket/
 **To get started with the project locally, follow these steps:**
 
 ### **1️⃣. Cloning a project**
+
 ```sh
 
 NEXT_PUBLIC_SUPABASE_URL=your-supabase-url
@@ -141,9 +142,12 @@ NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=your-stripe-publishable-key
 STRIPE_SECRET_KEY=your-stripe-secret-key
 NEXT_PUBLIC_APP_URL=your-app-url
 
-This project requires the following tables to be created in Supabase. Follow the instructions below to set up the database.
+```
 
-Run the following SQL queries in the Supabase SQL Editor or your preferred PostgreSQL client:
+** This project requires the following tables to be created in Supabase. Follow the instructions below to set up the database. **
+
+** Run the following SQL queries in the Supabase SQL Editor or your preferred PostgreSQL client:  **
+```sh
 
 ```sql
 CREATE TABLE profiles (
@@ -185,16 +189,18 @@ CREATE TABLE premium_users (
     user_id UUID PRIMARY KEY REFERENCES profiles(id) ON DELETE CASCADE
 );
 
-🛠 Main Features
-✅ Auth & Authentication: Supabase Authentication
-✅ Product Management: Add, Edit, Delete
-✅ Ordering System: Cart & Payment with Stripe
-✅ Premium Subscriptions: Stripe Subscriptions
-✅ Blog Creation & Editing
-✅ Multilingual Support (i18n)
-✅ User Profile & Theme Change
+  ```
 
-✅ **Note:**
+## 🛠 Main Features
+- 🔐 **✅ Auth & Authentication: Supabase Authentication**
+- 🛍 **✅ Product Management: Add, Edit, Delete**
+- 🛒 **✅ Ordering System: Cart & Payment with Stripe**
+- 💳 **✅ Premium Subscriptions: Stripe Subscriptions**
+- 📝 **✅ Blog Creation & Editing**
+- 🌍 **✅ Multilingual Support (i18n)**
+- 🧑‍💼 **✅ User Profile & Theme Change**
+
+##✅ **Note:**
 - You can change the **GitHub link** to your project.
 - **The variables in the **`.env.local`** file **must** be filled in correctly.
 - **Supabase** tables **SQL scripts** are required** to **create** the tables**.
