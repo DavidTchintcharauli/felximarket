@@ -1,11 +1,21 @@
 # 🛒 FlexiMarket - E-Commerce Platform
 
 FelxiMarket is a modern e-commerce platform built with **Next.js + Supabase + Stripe**, featuring:  
-🛍 Product Management | 📝 Blog System | 💳 Stripe Payments | 🌍 i18n Support | 🌙 Dark/Light Mode  
+
+- 🛍 **Product Management** (Add, Edit, Delete)
+- 📝 **Blog System** (Create & Edit Blog Posts)
+- 🛒 **Shopping Cart & Order Management**
+- 💳 **Premium Subscriptions via Stripe**
+- 🔐 **User Authentication (Supabase)**
+- 🌍 **Multi-language Support (English/Georgian)**
+- 🌙 **Dark/Light Mode Theme Toggle**
+- 📦 **Image Upload with Validation (Max 2MB)**
+- ✅ **Secure Checkout & Payment System**
 
 ---
 
 ## Table of Contents
+- [Overview](#overview)
 
 ## 🌟 Overview  
 A full-stack e-commerce solution with:  
