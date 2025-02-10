@@ -4,7 +4,7 @@ export function Loading() {
     const { t } = useTranslation();
     return (
         <div className="flex justify-center items-center min-h-screen text-xl font-semibold">
-            {t("loading...")}
+            {t("loading")}
         </div>
     )
 }

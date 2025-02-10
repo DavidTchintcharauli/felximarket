@@ -166,7 +166,7 @@ export default function BlogsListPage() {
         : [];
 
     return (
-        <div className="max-w-6xl mx-auto mt-20 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
+        <div className="max-w-6xl mx-auto mt-32 p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md">
             <div className="flex justify-between items-center mb-6">
                 <h1 className="text-3xl font-bold text-gray-900 dark:text-white">{t("blogs")}</h1>
                 <button

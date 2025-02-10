@@ -113,12 +113,12 @@ export default function Header() {
       </div>
 
       {menuOpen && (
-        <nav className="md:hidden bg-white dark:bg-gray-800 shadow-md py-4 px-6">
+        <nav className="md:hidden bg-white dark:bg-gray-800 shadow-lg rounded-lg py-6 px-8">
           <ul className="space-y-4 text-center">
             <li>
               <Link
                 href="/products"
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
+                className="block text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-blue-500 transition duration-300"
               >
                 {t("products")}
               </Link>
@@ -126,7 +126,7 @@ export default function Header() {
             <li>
               <Link
                 href="/blogs"
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
+                className="block text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-green-500 transition duration-300"
               >
                 {t("blogs")}
               </Link>
@@ -134,32 +134,67 @@ export default function Header() {
             <li>
               <Link
                 href="/contact"
-                className="text-gray-700 dark:text-gray-300 hover:text-blue-500 transition"
+                className="block text-lg font-medium text-gray-700 dark:text-gray-300 hover:text-red-500 transition duration-300"
               >
                 {t("contact")}
               </Link>
             </li>
-            <li className="flex justify-center">
+
+            {/* ენისა და თემის ღილაკები */}
+            <li className="flex justify-center gap-4 mt-4">
               <LanguageButton onClick={handleLanguageChange} />
-            </li>
-            <li className="flex justify-center">
               <ThemeToggleButton />
             </li>
+
             {user ? (
               <>
-                <li className="text-gray-700 dark:text-white">{user.email}</li>
-                <li>
+                {/* მომხმარებლის იმეილი */}
+                <li className="text-lg font-semibold text-gray-900 dark:text-white mt-4">
+                  {user.email}
+                </li>
+
+                {/* ღილაკები */}
+                <li className="grid grid-cols-2 gap-3 mt-4">
+                  <Link href="/cart">
+                    <button className="w-full py-2 bg-yellow-500 text-white font-semibold rounded-lg hover:bg-yellow-600 transition duration-300">
+                      {t("cart")}
+                    </button>
+                  </Link>
+                  <Link href="/profile">
+                    <button className="w-full py-2 bg-purple-500 text-white font-semibold rounded-lg hover:bg-purple-600 transition duration-300">
+                      {t("profile")}
+                    </button>
+                  </Link>
+                  <Link href="/orders">
+                    <button className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300">
+                      {t("orders")}
+                    </button>
+                  </Link>
                   <button
                     onClick={handleSignOut}
-                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 transition"
+                    className="w-full py-2 bg-red-500 text-white font-semibold rounded-lg hover:bg-red-600 transition duration-300"
                   >
                     {t("logout")}
                   </button>
                 </li>
               </>
-            ) : null}
+            ) : (
+              <li className="grid grid-cols-2 gap-3 mt-4">
+                <Link href="/auth/login">
+                  <button className="w-full py-2 bg-green-500 text-white font-semibold rounded-lg hover:bg-green-600 transition duration-300">
+                    {t("login")}
+                  </button>
+                </Link>
+                <Link href="/auth/register">
+                  <button className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 transition duration-300">
+                    {t("registration")}
+                  </button>
+                </Link>
+              </li>
+            )}
           </ul>
         </nav>
+
       )}
     </header>
   );

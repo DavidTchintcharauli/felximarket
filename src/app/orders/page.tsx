@@ -6,23 +6,25 @@ import { useAuth } from "../context/AuthContext";
 import { useTranslation } from "react-i18next";
 import Image from "next/image";
 
-type Order = {
+interface OrderItem {
   id: string;
-  items: {
-    id: string;
-    name: string;
-    price: number;
-    images: string[];
-  }[];
+  name: string;
+  price: number;
+  images: string[];
+}
+
+interface Order {
+  id: string;
+  items: OrderItem[];
   total_price: number;
   created_at: string;
   status: string;
-};
+}
 
 export default function OrdersPage() {
   const { user, isLoading } = useAuth();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [loadingOrders, setLoadingOrders] = useState(true);
+  const [loadingOrders, setLoadingOrders] = useState<boolean>(true);
   const { t } = useTranslation();
 
   useEffect(() => {
@@ -54,7 +56,13 @@ export default function OrdersPage() {
   }
 
   if (orders.length === 0) {
-    return <div className="text-center text-xl mt-10">{t("noOrdersYet")}</div>;
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen text-center">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">
+          {t("noOrdersYet")}
+        </h2>
+      </div>
+    );
   }
 
   return (
@@ -65,10 +73,12 @@ export default function OrdersPage() {
 
       {orders.map((order) => (
         <div key={order.id} className="mb-8 p-4 border rounded-lg shadow-sm bg-gray-100 dark:bg-gray-900">
-          <h2 className="text-lg text-black font-bold">{t("orderID")} {order.id}</h2>
+          <h2 className="text-lg text-black font-bold">
+            {t("orderID")} {order.id}
+          </h2>
           <p className="text-sm text-gray-500">📅 {new Date(order.created_at).toLocaleString()}</p>
-          <p className="text-sm text-gray-500">{t("total")}{order.total_price.toFixed(2)}</p>
-          <p className="text-sm text-gray-500">{t("status")}{order.status}</p>
+          <p className="text-sm text-gray-500">{t("total")} ${order.total_price.toFixed(2)}</p>
+          <p className="text-sm text-gray-500">{t("status")} {order.status}</p>
 
           <div className="mt-4 space-y-4">
             {order.items.map((item) => (
