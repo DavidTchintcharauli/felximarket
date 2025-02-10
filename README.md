@@ -223,12 +223,12 @@ You can see the demo version of the project here:
 
 **To get started with the project locally, follow these steps:**
 
-```md
-**1. Clone the repository:**
-```bash
-git clone https://github.com/DavidTchintcharauli/felximarket.git
+1. **Clone the repository:**
 
   ```bash
+  git clone https://github.com/DavidTchintcharauli/felximarket.git
+  
+  ```
    
 2. **Navigate into the project directory:**
 
