@@ -156,9 +156,9 @@ NEXT_PUBLIC_APP_URL=your-app-url
 ** This project requires the following tables to be created in Supabase. Follow the instructions below to set up the database. **
 
 ** Run the following SQL queries in the Supabase SQL Editor or your preferred PostgreSQL client:  **
-```sh
 
 ```sql
+
 CREATE TABLE profiles (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     first_name TEXT,
@@ -209,7 +209,7 @@ CREATE TABLE premium_users (
 - 🌍 **✅ Multilingual Support (i18n)**
 - 🧑‍💼 **✅ User Profile & Theme Change**
 
-##✅ **Note:**
+## ✅ **Note:**
 - You can change the **GitHub link** to your project.
 - **The variables in the **`.env.local`** file **must** be filled in correctly.
 - **Supabase** tables **SQL scripts** are required** to **create** the tables**.
@@ -223,11 +223,12 @@ You can see the demo version of the project here:
 
 **To get started with the project locally, follow these steps:**
 
-1. **Clone the repository:**
+```md
+**1. Clone the repository:**
+```bash
+git clone https://github.com/DavidTchintcharauli/felximarket.git
 
   ```bash
-  git clone https://github.com/DavidTchintcharauli/felximarket.git
-  ```
    
 2. **Navigate into the project directory:**
 
